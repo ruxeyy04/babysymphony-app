@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "babysymphony-app",
-    "slug": "babysymphony-app",
+    "name": "BabySymphony",
+    "slug": "babysymphony",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "babysymphony",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
