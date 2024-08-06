@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "BabySymphony",
+    "name": "LullaBy: Baby Symphony",
     "slug": "babysymphony",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/lullaby-icon.png",
     "scheme": "babysymphony",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/lullaby-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/lullaby-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
