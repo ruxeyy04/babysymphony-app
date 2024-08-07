@@ -25,7 +25,7 @@ export default function App() {
           />
         </View>
       </View>
-      <StatusBar backgroundColor="#B6D9D2" style="light" />
+      {/* <StatusBar backgroundColor="#B6D9D2" style="light" /> */}
     </SafeAreaView>
   );
 }
