@@ -7,6 +7,15 @@ import FormField from '@/components/FormField';
 import { useState } from "react";
 import * as Notifications from 'expo-notifications';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: false,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+
 const SignIn = () => {
 
   const [form, setForm] = useState({
