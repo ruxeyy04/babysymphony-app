@@ -13,7 +13,7 @@ export default function App() {
         }}
       >
         <View className='flex-1 items-center justify-center'>
-        <Image
+          <Image
             source={Images.logo}
             className="w-[300px] h-[78px]"
             resizeMode="contain"
