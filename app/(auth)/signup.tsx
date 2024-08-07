@@ -104,7 +104,7 @@ const SignUp = () => {
               Have an account already?
             </Text>
             <Link
-              href="/sign-in"
+              href="/signin"
               className="text-lg font-psemibold text-secondary"
             >
               Login
