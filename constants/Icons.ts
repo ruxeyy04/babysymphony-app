@@ -4,4 +4,5 @@ import child from '../assets/images/icons/child.png'
 import notif from '../assets/images/icons/notif.png'
 import eyeHide from "../assets/images/icons/eyehide.png";
 import eye from "../assets/images/icons/eye.png";
-export default { profile, home, child, notif, eye, eyeHide }
+import create from "../assets/images/icons/create.png";
+export default { profile, home, child, notif, eye, eyeHide, create }

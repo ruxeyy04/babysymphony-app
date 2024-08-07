@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Alert, Dimensions, Image, ScrollView, Text, View } from 'react-native';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -72,6 +72,7 @@ const SignIn = () => {
   const submit = () => {
     if (validateForm()) {
       notification("Success", "Successfully logged-in")
+      router.push('/home')
     } else {
       Alert.alert("Error", "Please fill in all fields");
     }
