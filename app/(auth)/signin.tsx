@@ -5,8 +5,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/Button';
 import FormField from '@/components/FormField';
 import { useState } from "react";
+import * as Notifications from 'expo-notifications';
 
 const SignIn = () => {
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -48,9 +50,19 @@ const SignIn = () => {
     return isValid;
   };
 
+  async function notification(title: string, body: string) {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: title,
+        body: body,
+        data: { data: 'goes here', test: { test1: 'more data' } },
+      },
+      trigger: null,
+    });
+  }
   const submit = () => {
     if (validateForm()) {
-      Alert.alert("Logging In", "Testing...");
+      notification("Success", "Successfully logged-in")
     } else {
       Alert.alert("Error", "Please fill in all fields");
     }
