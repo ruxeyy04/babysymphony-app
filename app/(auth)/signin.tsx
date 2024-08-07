@@ -26,10 +26,10 @@ const SignIn = () => {
           <Image
             source={Images.logo}
             resizeMode="contain"
-            className="w-[115px] h-[34px]"
+            className="w-[115px] h-[34px] mb-4"
           />
 
-          <Text className="text-2xl font-semibold text-black mt-10 font-psemibold mb-7">
+          <Text className="text-2xl font-semibold text-black mt-10 font-psemibold mb-10">
             Log in to LullaBy
           </Text>
 
