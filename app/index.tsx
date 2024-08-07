@@ -1,13 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
-import { Link } from 'expo-router';
+import { Redirect, router } from "expo-router";
+import { Text, View, ScrollView, Image } from 'react-native';
+import { Images } from '@/constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomButton from '@/components/Button';
 export default function App() {
   return (
-    <View className='flex-1 bg-[#1f1f1f] items-center justify-center'>
-      <Text className="text-3xl text-blue-600">LullaBy</Text>
-      <StatusBar style="auto" />
-      <Link href="/profile" className='text-white'>Go to profile</Link>
-      
-    </View>
+    <SafeAreaView className=' bg-primary h-full'>
+      <ScrollView
+        contentContainerStyle={{
+          height: "100%",
+        }}
+      >
+        <View className='flex-1 items-center justify-center'>
+        <Image
+            source={Images.logo}
+            className="w-[300px] h-[78px]"
+            resizeMode="contain"
+          />
+          <CustomButton
+            title="Login to Continue"
+            handlePress={() => router.push("/sign-in")}
+            containerStyles="w-1/2 mt-7"
+          />
+        </View>
+      </ScrollView>
+
+      <StatusBar backgroundColor="#B6D9D2" style="light" />
+    </SafeAreaView>
+
   );
 }
