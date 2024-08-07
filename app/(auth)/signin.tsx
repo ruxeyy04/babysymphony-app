@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { Redirect, router, Link } from "expo-router";
 import { Text, View, ScrollView, Image, Alert, Dimensions } from 'react-native';
 import { Images } from '@/constants';
@@ -6,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/Button';
 const SignIn = () => {
   const submit = () => {
-    Alert.alert("Testing");
+    Alert.alert("Logging In", "Testing...");
   }
   return (
     <SafeAreaView className="bg-primary h-full">
