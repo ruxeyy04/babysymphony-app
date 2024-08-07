@@ -1,25 +1,30 @@
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
-interface ButtonProps extends TouchableOpacity {
+type CustomButtonProps = {
   title: string;
-  textStyles?: string;
-  containerStyles?: string;
-  isLoading?: boolean;
   handlePress: () => void;
+  textStyles?: string; 
+  containerStyles: string;
+  isLoading?: boolean; 
 }
 
-const CustomButton: React.FC<ButtonProps> = ({ title, handlePress, textStyles, containerStyles, isLoading, ...props }) => {
+const CustomButton: React.FC<CustomButtonProps> = ({
+  title,
+  handlePress,
+  textStyles = "",
+  containerStyles,
+  isLoading = false, 
+}) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`bg-secondary rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
+      className={`bg-[#f0b69a] rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}
-      {...props}
     >
-      <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>
+      <Text className={`text-[#161622] font-psemibold text-lg ${textStyles}`}>
         {title}
       </Text>
 
