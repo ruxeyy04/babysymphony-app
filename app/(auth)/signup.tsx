@@ -37,6 +37,9 @@ const SignUp = () => {
     if (!form.email) {
       newErrors.email = "This field is required";
       valid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Invalid email address";
+      valid = false;
     }
     if (!form.password) {
       newErrors.password = "This field is required";
@@ -72,25 +75,32 @@ const SignUp = () => {
             Register to LullaBy
           </Text>
 
+          <FormField
+            title="Username"
+            value={form.username}
+            handleChangeText={(text) => handleChange('username', text)}
+            otherStyles="mt-7"
+            placeholder="Username"
+            error={errors.username}
+          />
 
           <FormField
-            label="Username"
-            value={form.username}
-            onChangeText={(text) => handleChange('username', text)}
-            errorMessage={errors.username}
-          />
-          <FormField
-            label="Email"
+            title="Email"
             value={form.email}
-            onChangeText={(text) => handleChange('email', text)}
-            errorMessage={errors.email}
+            handleChangeText={(text) => handleChange('email', text)}
+            otherStyles="mt-7"
+            placeholder="Email"
+            error={errors.email}
           />
+
           <FormField
-            label="Password"
+            title="Password"
             value={form.password}
-            onChangeText={(text) => handleChange('password', text)}
-            secureTextEntry
-            errorMessage={errors.password}
+            handleChangeText={(text) => handleChange('password', text)}
+            otherStyles="mt-7"
+            placeholder="Password"
+            secureTextEntry={true}
+            error={errors.password}
           />
 
           <CustomButton
@@ -105,7 +115,7 @@ const SignUp = () => {
             </Text>
             <Link
               href="/signin"
-              className="text-lg font-psemibold text-secondary"
+              className="text-lg font-psemibold text-secondary-200"
             >
               Login
             </Link>

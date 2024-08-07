@@ -1,6 +1,7 @@
-import profile from '../assets/images/profile.png'
-import home from '../assets/images/home.png'
-import child from '../assets/images/child.png'
-import notif from '../assets/images/notif.png'
-
-export default { profile, home, child, notif }
+import profile from '../assets/images/icons/profile.png'
+import home from '../assets/images/icons/home.png'
+import child from '../assets/images/icons/child.png'
+import notif from '../assets/images/icons/notif.png'
+import eyeHide from "../assets/images/icons/eyehide.png";
+import eye from "../assets/images/icons/eye.png";
+export default { profile, home, child, notif, eye, eyeHide }

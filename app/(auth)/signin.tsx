@@ -1,18 +1,60 @@
-import { Redirect, router, Link } from "expo-router";
-import { Text, View, ScrollView, Image, Alert, Dimensions } from 'react-native';
+import { Link } from 'expo-router';
+import { Alert, Dimensions, Image, ScrollView, Text, View } from 'react-native';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/Button';
-import FormField from '@/components/FormField';  // Import the new component
+import FormField from '@/components/FormField';
 import { useState } from "react";
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleEmailChange = (text: string) => {
+    setForm({ ...form, email: text });
+    if (text !== "") {
+      setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+    }
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setForm({ ...form, password: text });
+    if (text !== "") {
+      setErrors((prevErrors) => ({ ...prevErrors, password: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    let newErrors = { email: "", password: "" };
+
+    if (form.email === "") {
+      newErrors.email = "This field is required";
+      isValid = false;
+    }
+    if (form.password === "") {
+      newErrors.password = "This field is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const submit = () => {
-    Alert.alert("Logging In", "Testing...");
-  }
+    if (validateForm()) {
+      Alert.alert("Logging In", "Testing...");
+    } else {
+      Alert.alert("Error", "Please fill in all fields");
+    }
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -34,15 +76,22 @@ const SignIn = () => {
           </Text>
 
           <FormField
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
+            title="Email or Username"
+            value={form.email}
+            handleChangeText={handleEmailChange} 
+            otherStyles="mt-7"
+            placeholder='Email/Username'
+            error={errors.email} 
           />
+
           <FormField
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
+            title="Password"
+            value={form.password}
+            handleChangeText={handlePasswordChange} 
+            otherStyles="mt-7"
+            placeholder='Password'
+            secureTextEntry={true}
+            error={errors.password} 
           />
 
           <CustomButton
@@ -57,7 +106,7 @@ const SignIn = () => {
             </Text>
             <Link
               href="/signup"
-              className="text-lg font-psemibold text-secondary"
+              className="text-lg font-psemibold text-secondary-200"
             >
               Signup
             </Link>
@@ -65,7 +114,7 @@ const SignIn = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 export default SignIn;
