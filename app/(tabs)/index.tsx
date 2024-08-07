@@ -15,12 +15,8 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-          {/* titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  }, */}
-  <Text className="text-3xl text-red-200">hello</Text>
+
+  <Text className="text-2xl text-blue-500">Sample text</Text>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome to LullaBy!</ThemedText>
         <HelloWave />
