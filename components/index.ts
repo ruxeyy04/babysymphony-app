@@ -1,7 +1,7 @@
 import Button from "./Button";
-import Input from "./Input";
+import FormField from "./FormField";
 
 export default {
     Button,
-    Input
+    FormField
 }

@@ -3,10 +3,17 @@ import { Text, View, ScrollView, Image, Alert, Dimensions } from 'react-native';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/Button';
+import FormField from '@/components/FormField';  // Import the new component
+import { useState } from "react";
+
 const SignIn = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   const submit = () => {
     Alert.alert("Logging In", "Testing...");
   }
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
@@ -22,10 +29,21 @@ const SignIn = () => {
             className="w-[115px] h-[34px]"
           />
 
-          <Text className="text-2xl font-semibold text-black mt-10 font-psemibold">
+          <Text className="text-2xl font-semibold text-black mt-10 font-psemibold mb-7">
             Log in to LullaBy
           </Text>
 
+          <FormField
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <FormField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
           <CustomButton
             title="Sign In"
@@ -50,4 +68,4 @@ const SignIn = () => {
   )
 }
 
-export default SignIn
+export default SignIn;
