@@ -106,7 +106,7 @@ const SignUp = () => {
           <CustomButton
             title="Sign Up"
             handlePress={submit}
-            containerStyles="mt-7"
+            containerStyles={{marginTop: 20}}
           />
 
           <View className="flex justify-center pt-5 flex-row gap-2">

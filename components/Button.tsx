@@ -1,30 +1,32 @@
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 type CustomButtonProps = {
   title: string;
   handlePress: () => void;
-  textStyles?: string; 
-  containerStyles: string;
-  isLoading?: boolean; 
-}
+  textStyles?: object;
+  containerStyles?: object;
+  isLoading?: boolean;
+};
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   title,
   handlePress,
-  textStyles = "",
-  containerStyles,
-  isLoading = false, 
+  textStyles = {},
+  containerStyles = {},
+  isLoading = false,
 }) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`bg-[#f0b69a] rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
-        isLoading ? "opacity-50" : ""
-      }`}
+      style={[
+        styles.container,
+        containerStyles,
+        isLoading && styles.disabled,
+      ]}
       disabled={isLoading}
     >
-      <Text className={`text-[#161622] font-psemibold text-lg ${textStyles}`}>
+      <Text style={[styles.text, textStyles]}>
         {title}
       </Text>
 
@@ -33,11 +35,33 @@ const CustomButton: React.FC<CustomButtonProps> = ({
           animating={isLoading}
           color="#fff"
           size="small"
-          className="ml-2"
+          style={styles.indicator}
         />
       )}
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#f0b69a",
+    borderRadius: 12, // 12px rounded-xl
+    minHeight: 62,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  text: {
+    color: "#161622",
+    fontFamily: "Poppins-SemiBold", // Assuming 'font-psemibold' is mapped to this
+    fontSize: 18, // 18px corresponds to text-lg
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  indicator: {
+    marginLeft: 8, // 8px corresponds to ml-2
+  },
+});
 
 export default CustomButton;

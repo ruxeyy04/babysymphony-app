@@ -72,7 +72,7 @@ const SignIn = () => {
   const submit = () => {
     if (validateForm()) {
       notification("Success", "Successfully logged-in")
-      router.push('/home')
+      router.push('/(tabs)/home')
     } else {
       Alert.alert("Error", "Please fill in all fields");
     }
@@ -119,7 +119,7 @@ const SignIn = () => {
           <CustomButton
             title="Sign In"
             handlePress={submit}
-            containerStyles="mt-7"
+            containerStyles={{marginTop: 20}}
           />
 
           <View className="flex justify-center pt-5 flex-row gap-2">
