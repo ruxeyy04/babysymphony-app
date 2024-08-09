@@ -1,13 +1,19 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Button, List } from 'react-native-paper'
+import { Icons } from '@/constants'
 
 const Child = () => {
   return (
     <SafeAreaView>
-    <View>
-      <Text>Children</Text>
-    </View>
+      <View>
+        <List.Accordion
+          title="Drawer"
+          left={props => <List.Icon {...props} icon="folder" />}>
+            <List.Item title="Test"/>
+        </List.Accordion>
+      </View>
     </SafeAreaView>
 
   )
