@@ -2,12 +2,11 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableNativeFeedback } from 'react-native';
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
+import { router } from 'expo-router';
 
 const Profile = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  const snapPoints = useMemo(() => ['20%'], []);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -33,7 +32,7 @@ const Profile = () => {
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
-        snapPoints={snapPoints}
+        enableDynamicSizing={true}  // Enable dynamic sizing
         onChange={handleSheetChanges}
         backdropComponent={renderBackdrop}
       >
@@ -54,6 +53,9 @@ type MenuProps = {
 const MenuItem = ({ icon, label }: MenuProps) => (
   <TouchableNativeFeedback
     background={TouchableNativeFeedback.Ripple('#ddd', false)}
+    onPress={() => {
+        router.push('/')
+    }}
   >
     <View style={styles.menuItem} >
       {icon}
@@ -71,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     backgroundColor: 'white',
-
   },
 });
 

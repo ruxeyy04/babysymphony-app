@@ -2,7 +2,7 @@ import { Link, router } from 'expo-router';
 import { Alert, Dimensions, Image, ScrollView, Text, View } from 'react-native';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
 import FormField from '@/components/FormField';
 import { useState } from "react";
 import * as Notifications from 'expo-notifications';
@@ -72,7 +72,7 @@ const SignIn = () => {
   const submit = () => {
     if (validateForm()) {
       notification("Success", "Successfully logged-in")
-      router.push('/(tabs)/home')
+      router.push('/home')
     } else {
       Alert.alert("Error", "Please fill in all fields");
     }
@@ -127,7 +127,7 @@ const SignIn = () => {
               Don't have an account?
             </Text>
             <Link
-              href="/signup"
+              href="/sign-up"
               className="text-lg font-psemibold text-secondary-200"
             >
               Signup

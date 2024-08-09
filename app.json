@@ -2,7 +2,7 @@
   "expo": {
     "name": "LullaBy: Baby Symphony",
     "slug": "babysymphony",
-    "version": "1.0.3",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/lullaby-icon.png",
     "scheme": "babysymphony",
@@ -41,10 +41,6 @@
       "eas": {
         "projectId": "fa5e6ce8-2cd8-441c-aa21-325491b13e7c"
       }
-    },
-    "assetBundlePatterns": [
-      "assets/fonts/*",
-      "assets/images/*"
-    ]
+    }
   }
 }

@@ -2,7 +2,7 @@ import { Redirect, router, Link } from "expo-router";
 import { Text, View, ScrollView, Image, Alert, Dimensions } from 'react-native';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
 import FormField from '@/components/FormField';  // Import the FormField component
 import { useState } from "react";
 
@@ -114,7 +114,7 @@ const SignUp = () => {
               Have an account already?
             </Text>
             <Link
-              href="/signin"
+              href="/sign-in"
               className="text-lg font-psemibold text-secondary-200"
             >
               Login

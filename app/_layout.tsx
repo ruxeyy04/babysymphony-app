@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import { SplashScreen, Stack } from "expo-router";
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
+  const insets = useSafeAreaInsets();
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -28,6 +29,7 @@ const RootLayout = () => {
   }, [fontsLoaded, error]);
 
   useEffect(() => {
+    // Request notification permissions
     const requestPermissions = async () => {
       const { status } = await Notifications.getPermissionsAsync();
       if (status !== 'granted') {

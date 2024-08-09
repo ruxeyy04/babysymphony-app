@@ -1,4 +1,4 @@
-import { View, Text, Image, ImageSourcePropType, Alert } from 'react-native'
+import { View, Text, Image, ImageSourcePropType, Alert, TouchableNativeFeedback } from 'react-native'
 import React from 'react'
 import { Tabs } from 'expo-router';
 import { Icons } from '@/constants';
@@ -14,6 +14,7 @@ type TabIconProps = {
 }
 
 
+
 const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
 
   return (
@@ -26,16 +27,37 @@ const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
         className="w-6 h-6"
       />
 
-      <Text
-        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
-        style={{ color: color }}
-      >
-        {name}
-      </Text>
+
     </View>
   );
 };
-
+const TabArr = [
+  {
+    name: "home",
+    title: "Home",
+    icon: Icons.home,
+  },
+  {
+    name: "child",
+    title: "Child",
+    icon: Icons.child,
+  },
+  {
+    name: "create",
+    title: "Create",
+    icon: Icons.create,
+  },
+  {
+    name: "notification",
+    title: "Alert",
+    icon: Icons.notif,
+  },
+  {
+    name: "profile",
+    title: "Profile",
+    icon: Icons.profile,
+  },
+];
 const TabsLayout = () => {
   return (
     <>
@@ -47,92 +69,39 @@ const TabsLayout = () => {
               tabBarInactiveTintColor: "#181818",
               tabBarShowLabel: false,
               tabBarStyle: {
-                backgroundColor: "#F5E4DC",
-                borderTopWidth: 1,
-                borderTopColor: "#c2b4ae",
-                height: 84,
+                height: 60,
+                position: 'absolute',
+                margin: 16,
+                borderRadius: 16
               },
             }}
           >
-            <Tabs.Screen
-              name="home"
-              options={{
-                title: "Home",
-                headerShown: false,
-                tabBarIcon: ({ color, focused }) => (
-                  <TabIcon
-                    icon={Icons.home}
-                    color={color}
-                    name="Home"
-                    focused={focused}
-                  />
-                ),
-              }}
-            />
+            {TabArr.map((item, index) => (
 
+              <Tabs.Screen
+                key={index}
+                name={item.name}
+                options={{
+                  title: item.title,
+                  headerShown: false,
+                  tabBarIcon: ({ color, focused }) => (
 
-            <Tabs.Screen
-              name="child"
-              options={{
-                title: "Child",
-                headerShown: false,
-                tabBarIcon: ({ color, focused }) => (
-                  <TabIcon
-                    icon={Icons.child}
-                    color={color}
-                    name="Child"
-                    focused={focused}
-                  />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="create"
-              options={{
-                title: "Create",
-                headerShown: false,
-                tabBarIcon: ({ color, focused }) => (
-                  <TabIcon
-                    icon={Icons.create}
-                    color={color}
-                    name="Create"
-                    focused={focused}
-                  />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="notification"
-              options={{
-                title: "Alert",
-                headerShown: false,
-                tabBarIcon: ({ color, focused }) => (
-                  <TabIcon
-                    icon={Icons.notif}
-                    color={color}
-                    name="Alert"
-                    focused={focused}
-                  />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="profile"
-              options={{
-                title: "Profile",
-                headerShown: false,
-                tabBarIcon: ({ color, focused }) => (
-                  <TabIcon
-                    icon={Icons.profile}
-                    color={color}
-                    name="Profile"
-                    focused={focused}
-                  />
-                ),
-              }}
-            />
+                    <View>
+
+                      <TabIcon
+                        icon={item.icon}
+                        color={color}
+                        name={item.title}
+                        focused={focused}
+                      />
+                    </View>
+
+                  ),
+                }}
+              />
+            ))}
           </Tabs>
-          
+
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
 

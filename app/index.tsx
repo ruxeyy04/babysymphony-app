@@ -3,10 +3,11 @@ import { Redirect, router } from "expo-router";
 import { Text, View, ScrollView, Image, StyleSheet } from 'react-native';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function App() {
-
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -21,7 +22,7 @@ export default function App() {
         <View style={styles.buttonContainer}>
           <CustomButton
             title="Login to Continue"
-            handlePress={() => router.push("/signin")}
+            handlePress={() => router.push("/sign-in")}
             containerStyles={{ width: '50%', marginTop: 28 }} // You can pass the style object directly
           />
         </View>
