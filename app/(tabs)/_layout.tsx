@@ -38,22 +38,10 @@ type Props = {
   navigation: StackNavigationProp<{}>;
 };
 
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
-
 const BottomNavigationExample = ({ navigation }: Props) => {
-  const [visible, setVisible] = React.useState<MenuVisibility>({});
-  const _toggleMenu = (name: string) => () =>
-    setVisible({ ...visible, [name]: !visible[name] });
-
-  const _getVisible = (name: string) => !!visible[name];
 
   const insets = useSafeAreaInsets();
   const [index, setIndex] = React.useState(0);
-  const [menuVisible, setMenuVisible] = React.useState(false);
-  const [sceneAnimation, setSceneAnimation] =
-    React.useState<
-      React.ComponentProps<typeof BottomNavigation>['sceneAnimationType']
-    >();
 
   const [routes] = React.useState<RoutesState>([
     {
@@ -61,6 +49,7 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       title: 'Home',
       focusedIcon: 'home',
       ...({ unfocusedIcon: 'home-outline' }),
+      color: '#009688'
     },
     {
       key: 'child',
@@ -72,12 +61,14 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       key: 'create',
       title: 'Create',
       focusedIcon: 'plus-circle',
+      color: '#ffffff',
       ...({ unfocusedIcon: 'plus-circle-outline' }),
     },
     {
       key: 'notif',
       title: 'Alert',
       focusedIcon: 'bell',
+      badge: true,
       ...({ unfocusedIcon: 'bell-outline' }),
     },
     {
@@ -93,20 +84,24 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       <BottomSheetModalProvider>
         <View style={styles.screen}>
           <BottomNavigation
+            // labeled={false}
+            barStyle={{ backgroundColor: '#DDC1C6' }}
             safeAreaInsets={{ bottom: insets.bottom }}
             navigationState={{ index, routes }}
             onIndexChange={setIndex}
             labelMaxFontSizeMultiplier={2}
+            theme={{ colors: { secondaryContainer: '#78A1B5' } }}
             renderScene={BottomNavigation.SceneMap({
               home: Home,
               child: Child,
-              create: Create, 
+              create: Create,
               notif: Notif,
-              profile: Profile 
+              profile: Profile
             })}
             sceneAnimationEnabled={"opacity" !== undefined}
             sceneAnimationType='opacity'
             sceneAnimationEasing={Easing.ease}
+            activeColor='#515E34'
           />
         </View>
       </BottomSheetModalProvider>
