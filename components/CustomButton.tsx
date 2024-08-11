@@ -44,8 +44,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f0b69a",
-    borderRadius: 12, // 12px rounded-xl
+    backgroundColor: "#B3B7FA",
+    borderRadius: 12, 
     minHeight: 62,
     flexDirection: "row",
     justifyContent: "center",
@@ -53,14 +53,14 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#161622",
-    fontFamily: "Poppins-SemiBold", // Assuming 'font-psemibold' is mapped to this
-    fontSize: 18, // 18px corresponds to text-lg
+    fontFamily: "Poppins-SemiBold", 
+    fontSize: 18, 
   },
   disabled: {
     opacity: 0.5,
   },
   indicator: {
-    marginLeft: 8, // 8px corresponds to ml-2
+    marginLeft: 8,
   },
 });
 

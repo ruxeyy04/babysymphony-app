@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { Icons } from "../constants";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 
 interface FormFieldProps {
   title: string;
@@ -23,10 +24,12 @@ const FormField = ({
   ...props
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { currentTheme } = useTheme(); // Access the current theme
 
   return (
+    <ThemeProvider>
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-black-100 font-pmedium">{title}</Text>
+      <Text className="text-base  font-pmedium" style={{color: currentTheme.textColor}}>{title}</Text>
 
       <View className={`w-full h-16 px-4 bg-white rounded-2xl border-2 ${error ? 'border-red-500' : 'border-gray-200'} flex flex-row items-center`}>
         <TextInput
@@ -54,6 +57,8 @@ const FormField = ({
         <Text className="text-red-500 text-sm mt-1">{error}</Text> // Error message
       )}
     </View>
+    </ThemeProvider>
+
   );
 };
 

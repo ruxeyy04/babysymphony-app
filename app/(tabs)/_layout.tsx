@@ -19,6 +19,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import Child from './child';
 import Create from './create';
 import Notif from './notif';
+import { ThemeProvider, useTheme as AppTheme  } from '@/context/ThemeContext';
 type RoutesState = Array<{
   key: string;
   title: string;
@@ -71,37 +72,39 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       ...({ unfocusedIcon: 'account-circle-outline' }),
     },
   ]);
-
+  const { currentTheme } = AppTheme()
   return (
-    <Provider >
-      <GestureHandlerRootView>
-        <BottomSheetModalProvider>
-          <View style={styles.screen}>
-            <BottomNavigation
-              // labeled={false}
-              barStyle={{ backgroundColor: '#282831' }}
-              safeAreaInsets={{ bottom: insets.bottom }}
-              navigationState={{ index, routes }}
-              onIndexChange={setIndex}
-              labelMaxFontSizeMultiplier={2}
-              theme={{ colors: { secondaryContainer: '#444559' } }}
-              renderScene={BottomNavigation.SceneMap({
-                home: Home,
-                child: Child,
-                notif: Notif,
-                profile: Profile
-              })}
-              sceneAnimationEnabled={"opacity" !== undefined}
-              sceneAnimationType='opacity'
-              sceneAnimationEasing={Easing.ease}
-              activeColor='#d7e0f9'
-              inactiveColor='#c7c5d0'
-            />
-          </View>
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
+    <ThemeProvider>
+      <Provider >
+        <GestureHandlerRootView>
+          <BottomSheetModalProvider>
+            <View style={styles.screen}>
+              <BottomNavigation
+                // labeled={false}
+                barStyle={{ backgroundColor: currentTheme.appbar }}
+                safeAreaInsets={{ bottom: insets.bottom }}
+                navigationState={{ index, routes }}
+                onIndexChange={setIndex}
+                labelMaxFontSizeMultiplier={2}
+                theme={{ colors: { secondaryContainer: currentTheme.botNav } }}
+                renderScene={BottomNavigation.SceneMap({
+                  home: Home,
+                  child: Child,
+                  notif: Notif,
+                  profile: Profile
+                })}
+                sceneAnimationEnabled={"opacity" !== undefined}
+                sceneAnimationType='opacity'
+                sceneAnimationEasing={Easing.ease}
+                activeColor={currentTheme.textColor}
+                inactiveColor={currentTheme.textColor}
+              />
+            </View>
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
 
-    </Provider>
+      </Provider>
+    </ThemeProvider>
 
 
   );

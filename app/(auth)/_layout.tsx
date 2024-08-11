@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
@@ -5,7 +6,7 @@ import { StatusBar } from "expo-status-bar";
 const AuthLayout = () => {
 
   return (
-    <>
+    <ThemeProvider>
       <Stack>
         <Stack.Screen
           name="sign-in"
@@ -22,7 +23,7 @@ const AuthLayout = () => {
       </Stack>
 
       {/* <StatusBar backgroundColor="#B6D9D2" style="light" /> */}
-    </>
+    </ThemeProvider>
   );
 };
 

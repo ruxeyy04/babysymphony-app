@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import { SplashScreen, Stack } from "expo-router";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ThemeProvider } from "@/context/ThemeContext"; // Adjust the path if necessary
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const insets = useSafeAreaInsets();
@@ -45,11 +47,13 @@ const RootLayout = () => {
   }
 
   return (
+    <ThemeProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
+    </ThemeProvider>
   );
 };
 

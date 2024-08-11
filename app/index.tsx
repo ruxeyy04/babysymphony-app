@@ -1,19 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { Redirect, router } from "expo-router";
-import { Text, View, ScrollView, Image, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { useTheme } from '@/context/ThemeContext'; // Adjust the path as necessary
+import CustomButton from '@/components/CustomButton';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '@/components/CustomButton';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 export default function App() {
-  
+  const { currentTheme } = useTheme(); // Access the current theme
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: currentTheme.background }]}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={Images.logo}
+            source={currentTheme.applogo}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -23,19 +24,17 @@ export default function App() {
           <CustomButton
             title="Login to Continue"
             handlePress={() => router.push("/sign-in")}
-            containerStyles={{ width: '50%', marginTop: 28 }} // You can pass the style object directly
+            containerStyles={{ width: '50%', marginTop: 28 }}
           />
         </View>
       </View>
-      {/* <StatusBar backgroundColor="#B6D9D2" style="light" /> */}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#B6D9D2', // 'bg-primary'
-    height: '100%', // 'h-full'
+    height: '100%',
   },
   container: {
     flex: 1,
@@ -52,6 +51,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: 'center',
-    marginBottom: 40, // 'mb-10' translates to 10 * 4 = 40px
+    marginBottom: 40,
   },
 });

@@ -6,6 +6,7 @@ import CustomButton from '@/components/CustomButton';
 import FormField from '@/components/FormField';
 import { useState } from "react";
 import * as Notifications from 'expo-notifications';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -77,9 +78,11 @@ const SignIn = () => {
       Alert.alert("Error", "Please fill in all fields");
     }
   };
+  const { currentTheme } = useTheme(); // Access the current theme
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+   <ThemeProvider>
+    <SafeAreaView className="h-full" style={{backgroundColor: currentTheme.background}}>
       <ScrollView>
         <View
           className="w-full flex justify-center h-full px-4 my-6"
@@ -88,12 +91,12 @@ const SignIn = () => {
           }}
         >
           <Image
-            source={Images.logo}
+            source={currentTheme.applogo}
             resizeMode="contain"
             className="w-[115px] h-[34px] mb-4"
           />
 
-          <Text className="text-2xl font-semibold text-black mt-10 font-psemibold mb-10">
+          <Text className="text-2xl font-semibold mt-10 font-psemibold mb-10" style={{color: currentTheme.textColor}}>
             Log in to LullaBy
           </Text>
 
@@ -123,12 +126,13 @@ const SignIn = () => {
           />
 
           <View className="flex justify-center pt-5 flex-row gap-2">
-            <Text className="text-lg text-black-100 font-pregular">
+            <Text className="text-lg  font-pregular" style={{color: currentTheme.textColor}}>
               Don't have an account?
             </Text>
             <Link
               href="/sign-up"
-              className="text-lg font-psemibold text-secondary-200"
+              className="text-lg font-psemibold "
+              style={{color: currentTheme.textColor}}
             >
               Signup
             </Link>
@@ -136,6 +140,7 @@ const SignIn = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+   </ThemeProvider>
   );
 };
 
