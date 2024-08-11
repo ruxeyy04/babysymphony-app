@@ -7,7 +7,7 @@ import {
   Platform,
   Easing,
 } from 'react-native';
-import { Appbar, BottomNavigation, Divider, Menu, Provider, useTheme } from 'react-native-paper';
+import { Appbar, BottomNavigation, DefaultTheme, Divider, Menu, Provider as PaperProvider, Provider, useTheme } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
@@ -58,13 +58,6 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       ...({ unfocusedIcon: 'account-child-outline' }),
     },
     {
-      key: 'create',
-      title: 'Create',
-      focusedIcon: 'plus-circle',
-      color: '#ffffff',
-      ...({ unfocusedIcon: 'plus-circle-outline' }),
-    },
-    {
       key: 'notif',
       title: 'Alert',
       focusedIcon: 'bell',
@@ -80,33 +73,35 @@ const BottomNavigationExample = ({ navigation }: Props) => {
   ]);
 
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModalProvider>
-        <View style={styles.screen}>
-          <BottomNavigation
-            // labeled={false}
-            barStyle={{ backgroundColor: '#DDC1C6' }}
-            safeAreaInsets={{ bottom: insets.bottom }}
-            navigationState={{ index, routes }}
-            onIndexChange={setIndex}
-            labelMaxFontSizeMultiplier={2}
-            theme={{ colors: { secondaryContainer: '#78A1B5' } }}
-            renderScene={BottomNavigation.SceneMap({
-              home: Home,
-              child: Child,
-              create: Create,
-              notif: Notif,
-              profile: Profile
-            })}
-            sceneAnimationEnabled={"opacity" !== undefined}
-            sceneAnimationType='opacity'
-            sceneAnimationEasing={Easing.ease}
-            activeColor='#515E34'
-          />
-        </View>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+    <Provider >
+      <GestureHandlerRootView>
+        <BottomSheetModalProvider>
+          <View style={styles.screen}>
+            <BottomNavigation
+              // labeled={false}
+              barStyle={{ backgroundColor: '#282831' }}
+              safeAreaInsets={{ bottom: insets.bottom }}
+              navigationState={{ index, routes }}
+              onIndexChange={setIndex}
+              labelMaxFontSizeMultiplier={2}
+              theme={{ colors: { secondaryContainer: '#444559' } }}
+              renderScene={BottomNavigation.SceneMap({
+                home: Home,
+                child: Child,
+                notif: Notif,
+                profile: Profile
+              })}
+              sceneAnimationEnabled={"opacity" !== undefined}
+              sceneAnimationType='opacity'
+              sceneAnimationEasing={Easing.ease}
+              activeColor='#d7e0f9'
+              inactiveColor='#c7c5d0'
+            />
+          </View>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
 
+    </Provider>
 
 
   );

@@ -1,11 +1,13 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableNativeFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableNativeFeedback, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '@/components/CustomButton';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Profile = () => {
+  const insets = useSafeAreaInsets();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const handlePresentModalPress = useCallback(() => {
@@ -36,7 +38,7 @@ const Profile = () => {
         onChange={handleSheetChanges}
         backdropComponent={renderBackdrop}
       >
-        <BottomSheetView style={styles.bottomSheetView}>
+        <BottomSheetView style={{paddingBottom: Platform.OS === 'ios' ? insets.bottom - 12 : 0}}>
           <MenuItem icon={<Ionicons name='settings-outline' size={24}></Ionicons>} label="Profile Setting" />
           <MenuItem icon={<Ionicons name="exit-outline" size={24} color={"#fc0313"}></Ionicons>} label="Logout" />
         </BottomSheetView>
@@ -54,7 +56,7 @@ const MenuItem = ({ icon, label }: MenuProps) => (
   <TouchableNativeFeedback
     background={TouchableNativeFeedback.Ripple('#ddd', false)}
     onPress={() => {
-        router.push('/')
+        label == "Logout" ? router.push('/') : router.push('/settings')
     }}
   >
     <View style={styles.menuItem} >
@@ -66,7 +68,7 @@ const MenuItem = ({ icon, label }: MenuProps) => (
 
 const styles = StyleSheet.create({
   bottomSheetView: {
-    // padding: 1,
+    
   },
   menuItem: {
     flexDirection: 'row',

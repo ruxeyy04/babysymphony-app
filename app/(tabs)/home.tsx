@@ -6,10 +6,10 @@ import { Images } from '@/constants';
 
 const Home = () => {
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeAreaView className="flex-1 bg-[#1b1b1f]">
       <View className='items-center justify-center flex-1'>
         <Image
-          source={Images.logo}
+          source={Images.logowhite}
           className="w-[300px] h-[78px]"
           resizeMode="contain"
         />
