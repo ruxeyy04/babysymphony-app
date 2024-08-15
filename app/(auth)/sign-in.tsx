@@ -1,7 +1,5 @@
-// google client id: 919456774294-h41hclonjcjcrqp7jgioklq0pfm6v0gj.apps.googleusercontent.com
 import { Link, router } from "expo-router";
 import { Alert, Dimensions, Image, ScrollView, Text, View } from "react-native";
-import { Images } from "@/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/components/CustomButton";
 import FormField from "@/components/FormField";
@@ -13,7 +11,6 @@ import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import CustomGoogleButton from "@/components/GoogleButton";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { fetchGoogleUserProfile } from "@/utils/fetchGoogleUserProfile";
-import * as AuthSession from "expo-auth-session";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -89,8 +86,8 @@ const SignIn = () => {
 
   const { currentTheme } = useTheme(); // Access the current theme
 
-  const { saveAuthData, authData } = useGoogleAuth(); //Access google hook
-  const [isAuthComplete, setIsAuthComplete] = useState(false);
+  const { saveAuthData } = useGoogleAuth(); //Access google hook
+
   // Google Auth setup
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId:
@@ -106,34 +103,28 @@ const SignIn = () => {
       const { authentication } = response;
       const { accessToken } = authentication;
 
-      // Fetch user profile
-      fetchGoogleUserProfile(accessToken).then((userProfile) => {
-        if (userProfile) {
-          const authData = {
-            accessToken,
-            refreshToken: authentication?.refreshToken,
-            user: {
-              name: userProfile.name,
-              email: userProfile.email,
-            },
-          };
+      fetchGoogleUserProfile(accessToken)
+        .then((userProfile) => {
+          if (userProfile) {
+            const authData = {
+              accessToken,
+              refreshToken: authentication?.refreshToken,
+              user: {
+                name: userProfile.name,
+                email: userProfile.email,
+              },
+            };
 
-          // Save the auth data
-          saveAuthData(authData);
-          console.log(authentication); // Handle authentication data
-          if (authentication) {
-            setIsAuthComplete(true);
+            saveAuthData(authData);
+            console.log("Authentication successful, navigating to home...");
+            router.replace("/(tabs)/home");
           }
-        }
-      });
+        })
+        .catch((error) => {
+          console.error("Error fetching user profile:", error);
+        });
     }
   }, [response]);
-  // Navigate only when authentication is fully complete
-  useEffect(() => {
-    if (isAuthComplete) {
-      router.push("/(tabs)/home");
-    }
-  }, [isAuthComplete]);
 
   return (
     <ThemeProvider>
