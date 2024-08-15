@@ -2,8 +2,9 @@ import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import { SplashScreen, Stack } from "expo-router";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemeProvider } from "@/context/ThemeContext"; // Adjust the path if necessary
+import { GoogleAuthProvider } from "@/context/GoogleAuthContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
@@ -34,7 +35,7 @@ const RootLayout = () => {
     // Request notification permissions
     const requestPermissions = async () => {
       const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') {
+      if (status !== "granted") {
         await Notifications.requestPermissionsAsync();
       }
     };
@@ -48,11 +49,17 @@ const RootLayout = () => {
 
   return (
     <ThemeProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <GoogleAuthProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="[...unmatched]"
+            options={{ headerShown: false }}
+          />
+        </Stack>
+      </GoogleAuthProvider>
     </ThemeProvider>
   );
 };
