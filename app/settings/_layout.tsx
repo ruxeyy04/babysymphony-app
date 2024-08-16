@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { List, Divider, RadioButton, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '@/context/ThemeContext'; // Import the useTheme hook
+import { useTheme } from '@/hooks/useAppTheme';  // Import the useTheme hook
 
 const themes = {
   light: {

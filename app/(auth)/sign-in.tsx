@@ -1,19 +1,17 @@
 import { Link, router } from "expo-router";
 import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CustomButton from "@/components/CustomButton";
 import FormField from "@/components/FormField";
 import { useState, useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
-import { ThemeProvider, useTheme } from "@/context/ThemeContext";
-import CustomGoogleButton from "@/components/GoogleButton";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { fetchGoogleUserProfile } from "@/utils/fetchGoogleUserProfile";
 import { Button, IconButton } from "react-native-paper";
 import { Icons } from "@/constants";
-
+import { useTheme } from "@/hooks/useAppTheme";
+import { ThemeProvider } from "@/context/ThemeContext";
 WebBrowser.maybeCompleteAuthSession();
 
 Notifications.setNotificationHandler({
@@ -86,9 +84,9 @@ const SignIn = () => {
     }
   };
 
-  const { currentTheme } = useTheme(); // Access the current theme
+  const { currentTheme } = useTheme(); 
 
-  const { saveAuthData } = useGoogleAuth(); //Access google hook
+  const { saveAuthData } = useGoogleAuth(); 
 
   // Google Auth setup
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -129,8 +127,8 @@ const SignIn = () => {
   }, [response]);
 
   return (
-    <ThemeProvider>
-      <SafeAreaView
+      <ThemeProvider>
+        <SafeAreaView
         className="h-full"
         style={{ backgroundColor: currentTheme.background }}
       >
@@ -141,19 +139,23 @@ const SignIn = () => {
               minHeight: Dimensions.get("window").height - 200,
             }}
           >
-           <View className="items-center">
-           <Image
-              source={currentTheme.applogo}
-              resizeMode="contain"
-              className="w-[150px] h-[50px] mb-1"
-            />
-           </View>
-            <Text
-              className="text-2xl font-semibold mt-10 font-psemibold mb-10"
+            <View className="items-center">
+              <Image
+                source={currentTheme.applogo}
+                resizeMode="contain"
+                className="w-[150px] h-[50px] mb-1"
+              />
+            </View>
+            <View className="mb-4">
+           <Text
+              className="text-2xl font-semibold mt-10 font-psemibold "
               style={{ color: currentTheme.textColor }}
             >
               Login
             </Text>
+            <Text className="font-plight" style={{ color: currentTheme.textColor }}>Login To Continue Using The App</Text>
+
+           </View>
 
             <FormField
               title="Email or Username"
@@ -175,35 +177,35 @@ const SignIn = () => {
             />
 
             <Button onPress={submit} className='w-full mt-10' style={{ borderRadius: 12, }} contentStyle={{
-            backgroundColor: "#B3B7FA",
-            borderRadius: 12,
-            minHeight: 62,
-          }}>
-            <Text style={{
-              color: "#161622",
-              fontFamily: "Poppins-SemiBold",
-              fontSize: 18,
-            }}>Login</Text>
-          </Button>
+              backgroundColor: "#B3B7FA",
+              borderRadius: 12,
+              minHeight: 62,
+            }}>
+              <Text style={{
+                color: "#161622",
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 18,
+              }}>Login</Text>
+            </Button>
             <View style={styles.orContainer}>
               <View style={styles.line} />
-              <Text style={{marginHorizontal: 10, color: currentTheme.textColor}}>Or Login with</Text>
+              <Text style={{ marginHorizontal: 10, color: currentTheme.textColor }}>Or Login with</Text>
               <View style={styles.line} />
             </View>
             <View className="items-center">
-            <IconButton
-              mode="outlined"
-              icon={({ size }) => (
-                <Image
-                  source={Icons.googleIcon}
-                  style={{ width: 30, height: 30, borderRadius: size / 2 }}
-                  accessibilityIgnoresInvertColors
-                />
-              )}
-              size={36}
-              onPress={() => promptAsync()}
-              style={{ backgroundColor: currentTheme.background }}
-            />
+              <IconButton
+                mode="outlined"
+                icon={({ size }) => (
+                  <Image
+                    source={Icons.googleIcon}
+                    style={{ width: 30, height: 30, borderRadius: size / 2 }}
+                    accessibilityIgnoresInvertColors
+                  />
+                )}
+                size={36}
+                onPress={() => promptAsync()}
+                style={{ backgroundColor: currentTheme.background }}
+              />
             </View>
 
             <View className="flex justify-center pt-5 flex-row gap-2">
@@ -224,7 +226,7 @@ const SignIn = () => {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </ThemeProvider>
+      </ThemeProvider>
   );
 };
 

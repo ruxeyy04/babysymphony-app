@@ -7,11 +7,11 @@ import {
   Platform,
   Easing,
 } from 'react-native';
-import { Appbar, BottomNavigation, DefaultTheme, Divider, Menu, Provider as PaperProvider, Provider, useTheme } from 'react-native-paper';
+import { Appbar, BottomNavigation, DefaultTheme, Divider, Menu, Provider as PaperProvider, Provider } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
-// Import your components
+import { useTheme } from '@/hooks/useAppTheme';
 import Profile from './profile';
 import Home from './home';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -19,7 +19,6 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import Child from './child';
 import Create from './create';
 import Notif from './notif';
-import { ThemeProvider, useTheme as AppTheme  } from '@/context/ThemeContext';
 type RoutesState = Array<{
   key: string;
   title: string;
@@ -72,9 +71,8 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       ...({ unfocusedIcon: 'account-circle-outline' }),
     },
   ]);
-  const { currentTheme } = AppTheme()
+  const { currentTheme } = useTheme()
   return (
-    <ThemeProvider>
       <Provider >
         <GestureHandlerRootView>
           <BottomSheetModalProvider>
@@ -104,7 +102,6 @@ const BottomNavigationExample = ({ navigation }: Props) => {
         </GestureHandlerRootView>
 
       </Provider>
-    </ThemeProvider>
 
 
   );

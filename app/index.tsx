@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
-import { useTheme } from '@/context/ThemeContext';
+
 import CustomButton from '@/components/CustomButton';
 import { Images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Button } from 'react-native-paper';
+import { useTheme } from '@/hooks/useAppTheme';
 
 export default function App() {
   const { currentTheme } = useTheme();

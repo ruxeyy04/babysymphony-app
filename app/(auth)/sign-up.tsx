@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/CustomButton';
 import FormField from '@/components/FormField';  // Import the FormField component
 import { useState } from "react";
+import { Button } from "react-native-paper";
+import { useTheme } from "@/hooks/useAppTheme";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -55,9 +57,10 @@ const SignUp = () => {
       Alert.alert("Testing", "Heheheh");
     }
   };
+  const { currentTheme } = useTheme();
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="h-full" style={{ backgroundColor: currentTheme.background }}>
       <ScrollView>
         <View
           className="w-full flex justify-center h-full px-4 my-6"
@@ -65,16 +68,24 @@ const SignUp = () => {
             minHeight: Dimensions.get("window").height - 100,
           }}
         >
-          <Image
-            source={Images.logo}
-            resizeMode="contain"
-            className="w-[115px] h-[34px] mb-4"
-          />
+          <View className="items-center">
+              <Image
+                source={currentTheme.applogo}
+                resizeMode="contain"
+                className="w-[150px] h-[50px] mb-1"
+              />
+            </View>
 
-          <Text className="text-2xl font-semibold text-black mt-10 font-psemibold mb-10">
-            Register to LullaBy
-          </Text>
+           <View className="mb-4">
+           <Text
+              className="text-2xl font-semibold mt-10 font-psemibold "
+              style={{ color: currentTheme.textColor }}
+            >
+              Register
+            </Text>
+            <Text className="font-plight" style={{ color: currentTheme.textColor }}>Enter Your Personal Information </Text>
 
+           </View>
           <FormField
             title="Username"
             value={form.username}
@@ -103,23 +114,33 @@ const SignUp = () => {
             error={errors.password}
           />
 
-          <CustomButton
-            title="Sign Up"
-            handlePress={submit}
-            containerStyles={{marginTop: 20}}
-          />
+          <Button onPress={submit} className='w-full mt-10' style={{ borderRadius: 12, }} contentStyle={{
+            backgroundColor: "#B3B7FA",
+            borderRadius: 12,
+            minHeight: 62,
+          }}>
+            <Text style={{
+              color: "#161622",
+              fontFamily: "Poppins-SemiBold",
+              fontSize: 18,
+            }}>Register</Text>
+          </Button>
 
           <View className="flex justify-center pt-5 flex-row gap-2">
-            <Text className="text-lg text-black-100 font-pregular">
-              Have an account already?
-            </Text>
-            <Link
-              href="/sign-in"
-              className="text-lg font-psemibold text-secondary-200"
-            >
-              Login
-            </Link>
-          </View>
+              <Text
+                className="text-lg font-pregular"
+                style={{ color: currentTheme.textColor }}
+              >
+                Have an account already?
+              </Text>
+              <Link
+                href="/sign-in"
+                className="text-lg font-psemibold "
+                style={{ color: currentTheme.textColor }}
+              >
+                Login
+              </Link>
+            </View>
         </View>
       </ScrollView>
     </SafeAreaView>

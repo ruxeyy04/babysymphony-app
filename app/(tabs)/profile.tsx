@@ -39,7 +39,7 @@ const Profile = () => {
     try {
       await clearAuthData();
       notification("Success", "Successfully logged-out");
-      router.push("/sign-in");
+      router.push("/");
     } catch (error) {
       console.error("Failed to sign out", error);
     }
