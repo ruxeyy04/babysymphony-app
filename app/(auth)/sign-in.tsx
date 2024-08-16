@@ -6,12 +6,12 @@ import { useState, useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { fetchGoogleUserProfile } from "@/utils/fetchGoogleUserProfile";
 import { Button, IconButton } from "react-native-paper";
 import { Icons } from "@/constants";
-import { useTheme } from "@/hooks/useAppTheme";
-import { ThemeProvider } from "@/context/ThemeContext";
+
 WebBrowser.maybeCompleteAuthSession();
 
 Notifications.setNotificationHandler({
@@ -84,9 +84,9 @@ const SignIn = () => {
     }
   };
 
-  const { currentTheme } = useTheme(); 
+  const { currentTheme } = useTheme(); // Access the current theme
 
-  const { saveAuthData } = useGoogleAuth(); 
+  const { saveAuthData } = useGoogleAuth(); //Access google hook
 
   // Google Auth setup
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -127,8 +127,7 @@ const SignIn = () => {
   }, [response]);
 
   return (
-      <ThemeProvider>
-        <SafeAreaView
+      <SafeAreaView
         className="h-full"
         style={{ backgroundColor: currentTheme.background }}
       >
@@ -153,7 +152,7 @@ const SignIn = () => {
             >
               Login
             </Text>
-            <Text className="font-plight" style={{ color: currentTheme.textColor }}>Login To Continue Using The App</Text>
+            <Text className="font-plight" style={{ color: currentTheme.textColor }}>Login To Continue Using he App</Text>
 
            </View>
 
@@ -226,7 +225,6 @@ const SignIn = () => {
           </View>
         </ScrollView>
       </SafeAreaView>
-      </ThemeProvider>
   );
 };
 

@@ -5,8 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/CustomButton';
 import FormField from '@/components/FormField';  // Import the FormField component
 import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 import { Button } from "react-native-paper";
-import { useTheme } from "@/hooks/useAppTheme";
 
 const SignUp = () => {
   const [form, setForm] = useState({
