@@ -1,11 +1,9 @@
-import { Redirect, router, Link } from "expo-router";
-import { Text, View, ScrollView, Image, Alert, Dimensions } from 'react-native';
-import { Images } from '@/constants';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '@/components/CustomButton';
-import FormField from '@/components/FormField';  // Import the FormField component
+import { Link } from "expo-router";
+import { Text, View, ScrollView, Image, Alert, Dimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import FormField from "@/components/FormField"; // Import the FormField component
 import { useState } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "@/hooks/useAppTheme";
 import { Button } from "react-native-paper";
 
 const SignUp = () => {
@@ -60,7 +58,10 @@ const SignUp = () => {
   const { currentTheme } = useTheme();
 
   return (
-    <SafeAreaView className="h-full" style={{ backgroundColor: currentTheme.background }}>
+    <SafeAreaView
+      className="h-full"
+      style={{ backgroundColor: currentTheme.background }}
+    >
       <ScrollView>
         <View
           className="w-full flex justify-center h-full px-4 my-6"
@@ -69,27 +70,31 @@ const SignUp = () => {
           }}
         >
           <View className="items-center">
-              <Image
-                source={currentTheme.applogo}
-                resizeMode="contain"
-                className="w-[150px] h-[50px] mb-1"
-              />
-            </View>
+            <Image
+              source={currentTheme.applogo}
+              resizeMode="contain"
+              className="w-[150px] h-[50px] mb-1"
+            />
+          </View>
 
-           <View className="mb-4">
-           <Text
+          <View className="mb-4">
+            <Text
               className="text-2xl font-semibold mt-10 font-psemibold "
               style={{ color: currentTheme.textColor }}
             >
               Register
             </Text>
-            <Text className="font-plight" style={{ color: currentTheme.textColor }}>Enter Your Personal Information </Text>
-
-           </View>
+            <Text
+              className="font-plight"
+              style={{ color: currentTheme.textColor }}
+            >
+              Enter Your Personal Information{" "}
+            </Text>
+          </View>
           <FormField
             title="Username"
             value={form.username}
-            handleChangeText={(text) => handleChange('username', text)}
+            handleChangeText={(text) => handleChange("username", text)}
             otherStyles="mt-7"
             placeholder="Username"
             error={errors.username}
@@ -98,7 +103,7 @@ const SignUp = () => {
           <FormField
             title="Email"
             value={form.email}
-            handleChangeText={(text) => handleChange('email', text)}
+            handleChangeText={(text) => handleChange("email", text)}
             otherStyles="mt-7"
             placeholder="Email"
             error={errors.email}
@@ -107,44 +112,53 @@ const SignUp = () => {
           <FormField
             title="Password"
             value={form.password}
-            handleChangeText={(text) => handleChange('password', text)}
+            handleChangeText={(text) => handleChange("password", text)}
             otherStyles="mt-7"
             placeholder="Password"
             secureTextEntry={true}
             error={errors.password}
           />
 
-          <Button onPress={submit} className='w-full mt-10' style={{ borderRadius: 12, }} contentStyle={{
-            backgroundColor: "#B3B7FA",
-            borderRadius: 12,
-            minHeight: 62,
-          }}>
-            <Text style={{
-              color: "#161622",
-              fontFamily: "Poppins-SemiBold",
-              fontSize: 18,
-            }}>Register</Text>
+          <Button
+            onPress={submit}
+            className="w-full mt-10"
+            style={{ borderRadius: 12 }}
+            contentStyle={{
+              backgroundColor: "#B3B7FA",
+              borderRadius: 12,
+              minHeight: 62,
+            }}
+          >
+            <Text
+              style={{
+                color: "#161622",
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 18,
+              }}
+            >
+              Register
+            </Text>
           </Button>
 
           <View className="flex justify-center pt-5 flex-row gap-2">
-              <Text
-                className="text-lg font-pregular"
-                style={{ color: currentTheme.textColor }}
-              >
-                Have an account already?
-              </Text>
-              <Link
-                href="/sign-in"
-                className="text-lg font-psemibold "
-                style={{ color: currentTheme.textColor }}
-              >
-                Login
-              </Link>
-            </View>
+            <Text
+              className="text-lg font-pregular"
+              style={{ color: currentTheme.textColor }}
+            >
+              Have an account already?
+            </Text>
+            <Link
+              href="/sign-in"
+              className="text-lg font-psemibold "
+              style={{ color: currentTheme.textColor }}
+            >
+              Login
+            </Link>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 export default SignUp;
