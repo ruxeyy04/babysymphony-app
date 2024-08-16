@@ -4,7 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/FormField"; // Import the FormField component
 import { useState } from "react";
 import { useTheme } from "@/hooks/useAppTheme";
-import { Button } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -56,7 +57,7 @@ const SignUp = () => {
     }
   };
   const { currentTheme } = useTheme();
-
+  const navigation = useNavigation();
   return (
     <SafeAreaView
       className="h-full"
@@ -69,6 +70,14 @@ const SignUp = () => {
             minHeight: Dimensions.get("window").height - 100,
           }}
         >
+                    <IconButton
+            icon="chevron-left"
+            size={24}
+            onPress={() => navigation.goBack()}
+            iconColor={`${currentTheme.textColor}`}
+            style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3", borderRadius: 10 }}
+              className="absolute top-0  border"
+          />
           <View className="items-center">
             <Image
               source={currentTheme.applogo}
@@ -140,7 +149,7 @@ const SignUp = () => {
             </Text>
           </Button>
 
-          <View className="flex justify-center pt-5 flex-row gap-2">
+          <View className="flex justify-center  py-5  flex-row gap-2">
             <Text
               className="text-lg font-pregular"
               style={{ color: currentTheme.textColor }}

@@ -20,6 +20,24 @@ const AuthLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="forgotpassword"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="otpverification"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="newpassword"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
     </ThemeProvider>
 

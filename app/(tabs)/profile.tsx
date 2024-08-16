@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -18,8 +18,15 @@ import { Link, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import * as Notifications from "expo-notifications";
+import { Button, Dialog, Portal } from "react-native-paper";
+import { useTheme } from "@/hooks/useAppTheme";
 
 const Profile = () => {
+  const [visible, setVisible] = useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
   const insets = useSafeAreaInsets();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { clearAuthData } = useGoogleAuth();
@@ -63,40 +70,64 @@ const Profile = () => {
     ),
     []
   );
-
+  const { currentTheme } = useTheme();
   return (
-    <View className="flex-1 justify-center items-center bg-primary">
-      <CustomButton
-        title="Profile Menu"
-        handlePress={handlePresentModalPress}
-        containerStyles="w-1/2 mt-[26px]"
-      />
+    <>
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: currentTheme.background }}>
+        <CustomButton
+          title="Profile Menu"
+          handlePress={handlePresentModalPress}
+          containerStyles="w-1/2 mt-[26px]"
+        />
 
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        enableDynamicSizing={true} // Enable dynamic sizing
-        onChange={handleSheetChanges}
-        backdropComponent={renderBackdrop}
-      >
-        <BottomSheetView
-          style={{
-            paddingBottom: Platform.OS === "ios" ? insets.bottom - 12 : 0,
-          }}
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          enableDynamicSizing={true} // Enable dynamic sizing
+          onChange={handleSheetChanges}
+          backdropComponent={renderBackdrop}
         >
-          <MenuItem
-            icon={<Ionicons name="settings-outline" size={24} />}
-            label="Profile Setting"
-            onPress={() => router.push("/settings")}
-          />
-          <MenuItem
-            icon={<Ionicons name="exit-outline" size={24} color="#fc0313" />}
-            label="Logout"
-            onPress={handleSignOut} // Passing handleSignOut as a prop
-          />
-        </BottomSheetView>
-      </BottomSheetModal>
-    </View>
+          <BottomSheetView
+            style={{
+              paddingBottom: Platform.OS === "ios" ? insets.bottom - 12 : 0,
+            }}
+          >
+            <MenuItem
+              icon={<Ionicons name="settings-outline" size={24} />}
+              label="Profile Setting"
+              onPress={() => router.push("/settings")}
+            />
+            <MenuItem
+              icon={<Ionicons name="exit-outline" size={24} color="#fc0313" />}
+              label="Logout"
+              onPress={() => { setVisible(true) }}
+            />
+          </BottomSheetView>
+        </BottomSheetModal>
+
+      </View>
+      <Portal>
+        <Dialog onDismiss={() => setVisible(false)} visible={visible} style={{backgroundColor: currentTheme.background}}>
+          <Dialog.Icon icon="alert" />
+          <Dialog.Title className="text-center" style={{color: currentTheme.textColor}}>Logout Confirmation</Dialog.Title>
+          <Dialog.Content className="text-center" >
+            <Text style={{color: currentTheme.textColor}}>Before logging out, please note that we are currently unable to notify you about all the new updates regarding your baby's cry feelings. Are you sure you want to logout?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setVisible(false)}>
+              Cancel
+            </Button>
+            <Button onPress={() => {
+            router.replace('/')
+            }}>
+              Logout
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+
+      </Portal>
+    </>
+
   );
 };
 

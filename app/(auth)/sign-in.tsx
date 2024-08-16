@@ -17,9 +17,11 @@ import * as WebBrowser from "expo-web-browser";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { fetchGoogleUserProfile } from "@/utils/fetchGoogleUserProfile";
-import { Button, IconButton } from "react-native-paper";
+import { Button, IconButton, MD3Colors, Provider, Snackbar } from "react-native-paper";
 import { Icons } from "@/constants";
 import { useTheme } from "@/hooks/useAppTheme";
+import { NavigatorContext } from "expo-router/build/views/Navigator";
+import { useNavigation } from '@react-navigation/native';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,6 +34,7 @@ Notifications.setNotificationHandler({
 });
 
 const SignIn = () => {
+  const navigation = useNavigation();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -41,6 +44,8 @@ const SignIn = () => {
     email: "",
     password: "",
   });
+  const [visible, setVisible] = useState<boolean>(false);
+
 
   const handleEmailChange = (text: string) => {
     setForm({ ...form, email: text });
@@ -147,6 +152,14 @@ const SignIn = () => {
             minHeight: Dimensions.get("window").height - 200,
           }}
         >
+          <IconButton
+            icon="chevron-left"
+            size={24}
+            onPress={() => navigation.goBack()}
+            iconColor={`${currentTheme.textColor}`}
+            style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3", borderRadius: 10 }}
+              className="absolute top-0  border"
+          />
           <View className="items-center">
             <Image
               source={currentTheme.applogo}
@@ -165,7 +178,7 @@ const SignIn = () => {
               className="font-plight"
               style={{ color: currentTheme.textColor }}
             >
-              Login To Continue Using he App
+              Login To Continue Using The App
             </Text>
           </View>
 
@@ -187,10 +200,10 @@ const SignIn = () => {
             secureTextEntry={true}
             error={errors.password}
           />
-
+          <Text className="font-pregular text-right my-3" style={{ color: currentTheme.textColor }} onPress={() => { router.push('/forgotpassword') }}>Forgot Password?</Text>
           <Button
             onPress={submit}
-            className="w-full mt-10"
+            className="w-full"
             style={{ borderRadius: 12 }}
             contentStyle={{
               backgroundColor: "#B3B7FA",
@@ -217,9 +230,21 @@ const SignIn = () => {
             </Text>
             <View style={styles.line} />
           </View>
-          <View className="items-center">
+          <View className="flex-row justify-center gap-[10px]">
             <IconButton
-              mode="outlined"
+              icon={({ size }) => (
+                <Image
+                  source={Icons.facebookIcon}
+                  style={{ width: 30, height: 30, borderRadius: size / 2 }}
+                  accessibilityIgnoresInvertColors
+                />
+              )}
+              size={36}
+              onPress={() => setVisible(!visible)}
+              style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3" }}
+              className="w-[100px]   border"
+            />
+            <IconButton
               icon={({ size }) => (
                 <Image
                   source={Icons.googleIcon}
@@ -229,11 +254,12 @@ const SignIn = () => {
               )}
               size={36}
               onPress={() => promptAsync()}
-              style={{ backgroundColor: currentTheme.background }}
+              style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3" }}
+              className="w-[100px]   border"
             />
           </View>
 
-          <View className="flex justify-center pt-5 flex-row gap-2">
+          <View className="flex justify-center py-5 flex-row gap-2">
             <Text
               className="text-lg font-pregular"
               style={{ color: currentTheme.textColor }}
@@ -248,8 +274,17 @@ const SignIn = () => {
               Register
             </Link>
           </View>
+
         </View>
+
       </ScrollView>
+      <Snackbar
+          visible={visible}
+          onDismiss={() => setVisible(false)}
+          duration={2000}
+        >
+          Under Development
+        </Snackbar>
     </SafeAreaView>
   );
 };

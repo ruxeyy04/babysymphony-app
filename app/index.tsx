@@ -39,7 +39,7 @@ export default function App() {
               style={{ color: currentTheme.textColor }}
             >
               Discover Endless{"\n"}
-              Possibilities with <Text className="text-[#8284b4]">LullaBy</Text>
+              Possibilities with <Text className="text-[#426ae1]">LullaBy</Text>
             </Text>
           </View>
 
