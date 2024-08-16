@@ -4,7 +4,7 @@ type CustomButtonProps = {
   title: string;
   handlePress: () => void;
   textStyles?: object;
-  containerStyles?: object;
+  containerStyles: string;
   isLoading?: boolean;
 };
 
@@ -21,10 +21,10 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       activeOpacity={0.7}
       style={[
         styles.container,
-        containerStyles,
         isLoading && styles.disabled,
       ]}
       disabled={isLoading}
+      className={`${containerStyles}`}
     >
       <Text style={[styles.text, textStyles]}>
         {title}

@@ -69,7 +69,7 @@ const Profile = () => {
       <CustomButton
         title="Profile Menu"
         handlePress={handlePresentModalPress}
-        containerStyles={{ width: "50%", marginTop: 28 }}
+        containerStyles="w-1/2 mt-[26px]"
       />
 
       <BottomSheetModal

@@ -1,5 +1,5 @@
 import { Link, router } from "expo-router";
-import { Alert, Dimensions, Image, ScrollView, Text, View } from "react-native";
+import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/components/CustomButton";
 import FormField from "@/components/FormField";
@@ -11,6 +11,8 @@ import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import CustomGoogleButton from "@/components/GoogleButton";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { fetchGoogleUserProfile } from "@/utils/fetchGoogleUserProfile";
+import { Button, IconButton } from "react-native-paper";
+import { Icons } from "@/constants";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -139,16 +141,18 @@ const SignIn = () => {
               minHeight: Dimensions.get("window").height - 200,
             }}
           >
-            <Image
+           <View className="items-center">
+           <Image
               source={currentTheme.applogo}
               resizeMode="contain"
-              className="w-[115px] h-[34px] mb-4"
+              className="w-[150px] h-[50px] mb-1"
             />
+           </View>
             <Text
               className="text-2xl font-semibold mt-10 font-psemibold mb-10"
               style={{ color: currentTheme.textColor }}
             >
-              Log in to LullaBy
+              Login
             </Text>
 
             <FormField
@@ -170,17 +174,37 @@ const SignIn = () => {
               error={errors.password}
             />
 
-            <CustomButton
-              title="Sign In"
-              handlePress={submit}
-              containerStyles={{ marginTop: 20 }}
+            <Button onPress={submit} className='w-full mt-10' style={{ borderRadius: 12, }} contentStyle={{
+            backgroundColor: "#B3B7FA",
+            borderRadius: 12,
+            minHeight: 62,
+          }}>
+            <Text style={{
+              color: "#161622",
+              fontFamily: "Poppins-SemiBold",
+              fontSize: 18,
+            }}>Login</Text>
+          </Button>
+            <View style={styles.orContainer}>
+              <View style={styles.line} />
+              <Text style={{marginHorizontal: 10, color: currentTheme.textColor}}>Or Login with</Text>
+              <View style={styles.line} />
+            </View>
+            <View className="items-center">
+            <IconButton
+              mode="outlined"
+              icon={({ size }) => (
+                <Image
+                  source={Icons.googleIcon}
+                  style={{ width: 30, height: 30, borderRadius: size / 2 }}
+                  accessibilityIgnoresInvertColors
+                />
+              )}
+              size={36}
+              onPress={() => promptAsync()}
+              style={{ backgroundColor: currentTheme.background }}
             />
-
-            <CustomGoogleButton
-              handlePress={() => promptAsync()}
-              disabled={!request}
-              styles="mt-2"
-            />
+            </View>
 
             <View className="flex justify-center pt-5 flex-row gap-2">
               <Text
@@ -194,7 +218,7 @@ const SignIn = () => {
                 className="text-lg font-psemibold "
                 style={{ color: currentTheme.textColor }}
               >
-                Signup
+                Register
               </Link>
             </View>
           </View>
@@ -204,4 +228,17 @@ const SignIn = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ccc',
+  },
+
+});
 export default SignIn;
