@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableNativeFeedback,
   Platform,
   Alert,
+  Image,
 } from "react-native";
 import {
   BottomSheetModal,
@@ -23,13 +24,17 @@ import { useTheme } from "@/hooks/useAppTheme";
 
 const Profile = () => {
   const [visible, setVisible] = useState(false);
-
-  const showDialog = () => setVisible(true);
-
-  const hideDialog = () => setVisible(false);
   const insets = useSafeAreaInsets();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { clearAuthData } = useGoogleAuth();
+
+  const userProfile = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    phone: "+123 456 7890",
+    address: "123 Main St, Anytown, USA",
+    profilePicture: "https://via.placeholder.com/100", // Placeholder image
+  };
 
   async function notification(title: string, body: string) {
     await Notifications.scheduleNotificationAsync({
@@ -56,10 +61,6 @@ const Profile = () => {
     bottomSheetModalRef.current?.present();
   }, []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    // console.log('handleSheetChanges', index);
-  }, []);
-
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -70,21 +71,31 @@ const Profile = () => {
     ),
     []
   );
-  const { currentTheme } = useTheme();
+
   return (
     <>
-      <View className="flex-1 justify-center items-center" style={{ backgroundColor: currentTheme.background }}>
+      <View style={styles.container}>
+        <View style={styles.profileContainer}>
+          <Image
+            source={{ uri: userProfile.profilePicture }}
+            style={styles.profilePicture}
+          />
+          <Text style={styles.profileName}>{userProfile.name}</Text>
+          <Text style={styles.profileEmail}>{userProfile.email}</Text>
+          <Text style={styles.profilePhone}>{userProfile.phone}</Text>
+          <Text style={styles.profileAddress}>{userProfile.address}</Text>
+        </View>
+
         <CustomButton
           title="Profile Menu"
           handlePress={handlePresentModalPress}
-          containerStyles="w-1/2 mt-[26px]"
+          containerStyles="w-1/2 mt-[20px]"
         />
 
         <BottomSheetModal
           ref={bottomSheetModalRef}
           index={0}
-          enableDynamicSizing={true} // Enable dynamic sizing
-          onChange={handleSheetChanges}
+          enableDynamicSizing={true}
           backdropComponent={renderBackdrop}
         >
           <BottomSheetView
@@ -100,41 +111,37 @@ const Profile = () => {
             <MenuItem
               icon={<Ionicons name="exit-outline" size={24} color="#fc0313" />}
               label="Logout"
-              onPress={() => { setVisible(true) }}
+              onPress={() => setVisible(true)}
             />
           </BottomSheetView>
         </BottomSheetModal>
 
+        <Portal>
+          <Dialog
+            onDismiss={() => setVisible(false)}
+            visible={visible}
+            style={styles.dialog}
+          >
+            <Dialog.Icon icon="alert" />
+            <Dialog.Title className="text-center">Logout Confirmation</Dialog.Title>
+            <Dialog.Content className="text-center">
+              <Text>Are you sure you want to logout?</Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setVisible(false)}>Cancel</Button>
+              <Button onPress={() => handleSignOut()}>Logout</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
-      <Portal>
-        <Dialog onDismiss={() => setVisible(false)} visible={visible} style={{backgroundColor: currentTheme.background}}>
-          <Dialog.Icon icon="alert" />
-          <Dialog.Title className="text-center" style={{color: currentTheme.textColor}}>Logout Confirmation</Dialog.Title>
-          <Dialog.Content className="text-center" >
-            <Text style={{color: currentTheme.textColor}}>Before logging out, please note that we are currently unable to notify you about all the new updates regarding your baby's cry feelings. Are you sure you want to logout?</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setVisible(false)}>
-              Cancel
-            </Button>
-            <Button onPress={() => {
-            router.replace('/')
-            }}>
-              Logout
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-
-      </Portal>
     </>
-
   );
 };
 
 type MenuProps = {
   icon: any;
   label: string;
-  onPress: () => void; // Added onPress as a prop
+  onPress: () => void;
 };
 
 const MenuItem = ({ icon, label, onPress }: MenuProps) => (
@@ -144,20 +151,73 @@ const MenuItem = ({ icon, label, onPress }: MenuProps) => (
   >
     <View style={styles.menuItem}>
       {icon}
-      <Text className="ml-[10px] text-[16px] font-pmedium text-[#333]">
-        {label}
-      </Text>
+      <Text style={styles.menuLabel}>{label}</Text>
     </View>
   </TouchableNativeFeedback>
 );
 
 const styles = StyleSheet.create({
-  bottomSheetView: {},
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  profileContainer: {
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#1f1f1f",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+    marginBottom: 20,
+    width: "100%",
+  },
+  profilePicture: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 5,
+    color: "#666",
+  },
+  profileEmail: {
+    fontSize: 16,
+    color: "#666",
+  },
+  profilePhone: {
+    fontSize: 16,
+    color: "#666",
+  },
+  profileAddress: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 5,
+  },
+  dialog: {
+    backgroundColor: "#ffffff",
+  },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     backgroundColor: "white",
+  },
+  menuLabel: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
