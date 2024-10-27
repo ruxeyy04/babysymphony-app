@@ -22,6 +22,8 @@ import { Icons } from "@/constants";
 import { useTheme } from "@/hooks/useAppTheme";
 import { NavigatorContext } from "expo-router/build/views/Navigator";
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -34,6 +36,7 @@ Notifications.setNotificationHandler({
 });
 
 const SignIn = () => {
+
   const navigation = useNavigation();
   const [form, setForm] = useState({
     email: "",
@@ -89,10 +92,26 @@ const SignIn = () => {
     });
   }
 
-  const submit = () => {
+  const submit = async () => {
     if (validateForm()) {
-      notification("Success", "Successfully logged-in");
-      router.push("/home");
+      try {
+        const response = await axios.post('http://192.168.1.224/api/login', {
+          username_email: form.email,
+          password: form.password,
+        });
+
+        if (response.data.message === "Success") {
+          await AsyncStorage.setItem('user_id', response.data.user_id.toString());
+        
+          notification("Success", "Successfully logged-in");
+          router.replace("/home");
+        } else {
+          Alert.alert("Error", response.data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Error", "An error occurred during login. Please try again.");
+      }
     } else {
       Alert.alert("Error", "Please fill in all fields");
     }
@@ -139,7 +158,16 @@ const SignIn = () => {
         });
     }
   }, [response]);
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const userId = await AsyncStorage.getItem('user_id');
+      if (userId) {
+        router.replace("/home");
+      }
+    };
 
+    checkLoginStatus();
+  }, []);
   return (
     <SafeAreaView
       className="h-full"
@@ -147,7 +175,7 @@ const SignIn = () => {
     >
       <ScrollView>
         <View
-          className="w-full flex justify-center h-full px-4 my-6"
+          className="flex justify-center w-full h-full px-4 my-6"
           style={{
             minHeight: Dimensions.get("window").height - 200,
           }}
@@ -158,7 +186,7 @@ const SignIn = () => {
             onPress={() => navigation.goBack()}
             iconColor={`${currentTheme.textColor}`}
             style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3", borderRadius: 10 }}
-              className="absolute top-0  border"
+              className="absolute top-0 border"
           />
           <View className="items-center">
             <Image
@@ -169,7 +197,7 @@ const SignIn = () => {
           </View>
           <View className="mb-4">
             <Text
-              className="text-2xl font-semibold mt-10 font-psemibold "
+              className="mt-10 text-2xl font-semibold font-psemibold "
               style={{ color: currentTheme.textColor }}
             >
               Login
@@ -195,15 +223,15 @@ const SignIn = () => {
             title="Password"
             value={form.password}
             handleChangeText={handlePasswordChange}
-            otherStyles="mt-7"
+            otherStyles="my-7"
             placeholder="Password"
             secureTextEntry={true}
             error={errors.password}
           />
-          <Text className="font-pregular text-right my-3" style={{ color: currentTheme.textColor }} onPress={() => { router.push('/forgotpassword') }}>Forgot Password?</Text>
+          {/* <Text className="my-3 text-right font-pregular" style={{ color: currentTheme.textColor }} onPress={() => { router.push('/forgotpassword') }}>Forgot Password?</Text> */}
           <Button
             onPress={submit}
-            className="w-full"
+            className="w-full mt-7"
             style={{ borderRadius: 12 }}
             contentStyle={{
               backgroundColor: "#B3B7FA",
@@ -221,7 +249,7 @@ const SignIn = () => {
               Login
             </Text>
           </Button>
-          <View style={styles.orContainer}>
+          {/* <View style={styles.orContainer}>
             <View style={styles.line} />
             <Text
               style={{ marginHorizontal: 10, color: currentTheme.textColor }}
@@ -229,9 +257,9 @@ const SignIn = () => {
               Or Login with
             </Text>
             <View style={styles.line} />
-          </View>
+          </View> */}
           <View className="flex-row justify-center gap-[10px]">
-            <IconButton
+            {/* <IconButton
               icon={({ size }) => (
                 <Image
                   source={Icons.facebookIcon}
@@ -243,8 +271,8 @@ const SignIn = () => {
               onPress={() => setVisible(!visible)}
               style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3" }}
               className="w-[100px]   border"
-            />
-            <IconButton
+            /> */}
+            {/* <IconButton
               icon={({ size }) => (
                 <Image
                   source={Icons.googleIcon}
@@ -256,10 +284,10 @@ const SignIn = () => {
               onPress={() => promptAsync()}
               style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3" }}
               className="w-[100px]   border"
-            />
+            /> */}
           </View>
 
-          <View className="flex justify-center py-5 flex-row gap-2">
+          <View className="flex flex-row justify-center gap-2 py-5 mt-5">
             <Text
               className="text-lg font-pregular"
               style={{ color: currentTheme.textColor }}

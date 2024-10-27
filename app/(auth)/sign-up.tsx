@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Text, View, ScrollView, Image, Alert, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/FormField"; // Import the FormField component
@@ -6,8 +6,9 @@ import { useState } from "react";
 import { useTheme } from "@/hooks/useAppTheme";
 import { Button, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-
+import axios from "axios"; 
 const SignUp = () => {
+  const navigation = useNavigation();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -51,13 +52,35 @@ const SignUp = () => {
     return valid;
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (validate()) {
-      Alert.alert("Testing", "Heheheh");
+      try {
+        const response = await axios.post('http://192.168.1.224/api/register', {
+          username: form.username,
+          email: form.email,
+          password: form.password,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log(response.data.status)
+        if (response.data.status == "success") {
+          Alert.alert("Success", "Registration successful");
+          router.push("/sign-in"); 
+        } else {
+          Alert.alert("Registration Failed", response.data.message || "Please try again");
+          
+        }
+      } catch (error) {
+        Alert.alert("Error", "An error occurred during registration");
+        console.log(error)
+      }
     }
   };
+  
   const { currentTheme } = useTheme();
-  const navigation = useNavigation();
+
   return (
     <SafeAreaView
       className="h-full"
@@ -65,18 +88,18 @@ const SignUp = () => {
     >
       <ScrollView>
         <View
-          className="w-full flex justify-center h-full px-4 my-6"
+          className="flex justify-center w-full h-full px-4 my-6"
           style={{
             minHeight: Dimensions.get("window").height - 100,
           }}
         >
-                    <IconButton
+          <IconButton
             icon="chevron-left"
             size={24}
             onPress={() => navigation.goBack()}
             iconColor={`${currentTheme.textColor}`}
             style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3", borderRadius: 10 }}
-              className="absolute top-0  border"
+            className="absolute top-0 border"
           />
           <View className="items-center">
             <Image
@@ -88,7 +111,7 @@ const SignUp = () => {
 
           <View className="mb-4">
             <Text
-              className="text-2xl font-semibold mt-10 font-psemibold "
+              className="mt-10 text-2xl font-semibold font-psemibold "
               style={{ color: currentTheme.textColor }}
             >
               Register
@@ -149,7 +172,7 @@ const SignUp = () => {
             </Text>
           </Button>
 
-          <View className="flex justify-center  py-5  flex-row gap-2">
+          <View className="flex flex-row justify-center gap-2 py-5">
             <Text
               className="text-lg font-pregular"
               style={{ color: currentTheme.textColor }}

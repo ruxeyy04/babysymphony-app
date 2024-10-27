@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Platform,
   Easing,
+  BackHandler,
+  Alert
 } from 'react-native';
 import { Appbar, BottomNavigation, DefaultTheme, Divider, Menu, Provider as PaperProvider, Provider } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,6 +21,8 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import Child from './child';
 import Create from './create';
 import Notif from './notif';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from 'expo-router';
 type RoutesState = Array<{
   key: string;
   title: string;
@@ -39,7 +43,37 @@ type Props = {
 };
 
 const BottomNavigationExample = ({ navigation }: Props) => {
+  React.useEffect(() => {
+    const checkLoginStatus = async () => {
+      const userId = await AsyncStorage.getItem('user_id');
+      if (!userId) {
+        router.replace("/sign-in");
+      }
+    };
 
+    checkLoginStatus();
+
+    // Handle back button press
+    const backAction = () => {
+      Alert.alert("Exit App", "Are you sure you want to exit the app?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true; // Prevent default back action
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Cleanup the event listener on unmount
+    return () => backHandler.remove();
+  }, [navigation]);
   const insets = useSafeAreaInsets();
   const [index, setIndex] = React.useState(0);
 

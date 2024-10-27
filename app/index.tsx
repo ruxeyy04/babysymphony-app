@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { useTheme } from "@/hooks/useAppTheme";
 import CustomButton from "@/components/CustomButton";
@@ -6,10 +6,20 @@ import { Images } from "@/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Button } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   const { currentTheme } = useTheme();
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const userId = await AsyncStorage.getItem('user_id');
+      if (userId) {
+        router.replace("/home");
+      }
+    };
 
+    checkLoginStatus();
+  }, []);
   return (
     <SafeAreaView
       className="h-full"
@@ -20,7 +30,7 @@ export default function App() {
           height: "100%",
         }}
       >
-        <View className="w-full flex justify-center items-center h-full px-4">
+        <View className="flex items-center justify-center w-full h-full px-4">
           <Image
             source={currentTheme.applogo}
             className="w-[130px] h-[84px]"
@@ -44,7 +54,7 @@ export default function App() {
           </View>
 
           <Text
-            className="text-sm font-pregular mt-7 text-center"
+            className="text-sm text-center font-pregular mt-7"
             style={{ color: currentTheme.textColor }}
           >
             Where Compassion Meets Technology: Embark on a Journey of Care and

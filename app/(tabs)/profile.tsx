@@ -21,7 +21,7 @@ import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import * as Notifications from "expo-notifications";
 import { Button, Dialog, Portal } from "react-native-paper";
 import { useTheme } from "@/hooks/useAppTheme";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Profile = () => {
   const [visible, setVisible] = useState(false);
   const insets = useSafeAreaInsets();
@@ -49,14 +49,22 @@ const Profile = () => {
 
   const handleSignOut = async () => {
     try {
-      await clearAuthData();
-      notification("Success", "Successfully logged-out");
-      router.push("/");
+      await clearUserData(); // Clear user ID from AsyncStorage
+      notification("Success", "Successfully logged-out"); // Notify user
+      router.push("/"); // Redirect to the sign-in or home screen
     } catch (error) {
-      console.error("Failed to sign out", error);
+      console.error("Failed to sign out", error); // Handle error if any
     }
   };
-
+  
+  const clearUserData = async () => {
+    try {
+      await AsyncStorage.removeItem('user_id');
+    } catch (error) {
+      console.error("Failed to clear auth data", error);
+    }
+  };
+  
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
