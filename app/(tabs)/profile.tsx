@@ -2,7 +2,6 @@ import React, { useCallback, useRef, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableNativeFeedback,
   Platform,
   Alert,
@@ -17,23 +16,23 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+
 import * as Notifications from "expo-notifications";
 import { Button, Dialog, Portal } from "react-native-paper";
 import { useTheme } from "@/hooks/useAppTheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const Profile = () => {
   const [visible, setVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const { clearAuthData } = useGoogleAuth();
 
   const userProfile = {
     name: "John Doe",
     email: "john.doe@example.com",
     phone: "+123 456 7890",
     address: "123 Main St, Anytown, USA",
-    profilePicture: "https://via.placeholder.com/100", // Placeholder image
+    profilePicture: "https://via.placeholder.com/100",
   };
 
   async function notification(title: string, body: string) {
@@ -49,22 +48,22 @@ const Profile = () => {
 
   const handleSignOut = async () => {
     try {
-      await clearUserData(); // Clear user ID from AsyncStorage
-      notification("Success", "Successfully logged-out"); // Notify user
-      router.push("/"); // Redirect to the sign-in or home screen
+      await clearUserData();
+      notification("Success", "Successfully logged-out");
+      router.push("/");
     } catch (error) {
-      console.error("Failed to sign out", error); // Handle error if any
+      console.error("Failed to sign out", error);
     }
   };
-  
+
   const clearUserData = async () => {
     try {
-      await AsyncStorage.removeItem('user_id');
+      await AsyncStorage.removeItem("user_id");
     } catch (error) {
       console.error("Failed to clear auth data", error);
     }
   };
-  
+
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
@@ -82,22 +81,26 @@ const Profile = () => {
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={styles.profileContainer}>
+      <View className="items-center justify-center flex-1 p-4">
+        <View className="items-center p-5 bg-[#1f1f1f] rounded-lg shadow-md shadow-black mb-5 w-full">
           <Image
             source={{ uri: userProfile.profilePicture }}
-            style={styles.profilePicture}
+            className="w-24 h-24 mb-3 rounded-full"
           />
-          <Text style={styles.profileName}>{userProfile.name}</Text>
-          <Text style={styles.profileEmail}>{userProfile.email}</Text>
-          <Text style={styles.profilePhone}>{userProfile.phone}</Text>
-          <Text style={styles.profileAddress}>{userProfile.address}</Text>
+          <Text className="mb-1 text-2xl font-bold text-gray-500">
+            {userProfile.name}
+          </Text>
+          <Text className="text-lg text-gray-500">{userProfile.email}</Text>
+          <Text className="text-lg text-gray-500">{userProfile.phone}</Text>
+          <Text className="mt-1 text-lg text-center text-gray-500">
+            {userProfile.address}
+          </Text>
         </View>
 
         <CustomButton
           title="Profile Menu"
           handlePress={handlePresentModalPress}
-          containerStyles="w-1/2 mt-[20px]"
+          containerStyles="w-1/2 mt-5"
         />
 
         <BottomSheetModal
@@ -128,7 +131,7 @@ const Profile = () => {
           <Dialog
             onDismiss={() => setVisible(false)}
             visible={visible}
-            style={styles.dialog}
+            style={{ backgroundColor: "#ffffff" }}
           >
             <Dialog.Icon icon="alert" />
             <Dialog.Title className="text-center">Logout Confirmation</Dialog.Title>
@@ -157,76 +160,11 @@ const MenuItem = ({ icon, label, onPress }: MenuProps) => (
     background={TouchableNativeFeedback.Ripple("#ddd", false)}
     onPress={onPress}
   >
-    <View style={styles.menuItem}>
+    <View className="flex-row items-center p-4 bg-white">
       {icon}
-      <Text style={styles.menuLabel}>{label}</Text>
+      <Text className="ml-2 text-lg font-semibold">{label}</Text>
     </View>
   </TouchableNativeFeedback>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-  },
-  profileContainer: {
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#1f1f1f",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
-    marginBottom: 20,
-    width: "100%",
-  },
-  profilePicture: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  profileName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 5,
-    color: "#666",
-  },
-  profileEmail: {
-    fontSize: 16,
-    color: "#666",
-  },
-  profilePhone: {
-    fontSize: 16,
-    color: "#666",
-  },
-  profileAddress: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginTop: 5,
-  },
-  dialog: {
-    backgroundColor: "#ffffff",
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "white",
-  },
-  menuLabel: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
 
 export default Profile;

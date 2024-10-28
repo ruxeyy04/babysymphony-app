@@ -23,6 +23,14 @@ import Create from './create';
 import Notif from './notif';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from 'expo-router';
+import {
+  Pusher,
+  PusherMember,
+  PusherChannel,
+  PusherEvent,
+} from '@pusher/pusher-websocket-react-native';
+import Devices from './device';
+
 type RoutesState = Array<{
   key: string;
   title: string;
@@ -43,6 +51,27 @@ type Props = {
 };
 
 const BottomNavigationExample = ({ navigation }: Props) => {
+  const pusher = Pusher.getInstance();
+  React.useEffect(() => {
+    const initializePusher = async () => {
+      await pusher.init({
+        apiKey: "9cd89ff693706c8e73e0",
+        cluster: "ap1"
+      });
+      
+      await pusher.connect();
+      await pusher.subscribe({
+        channelName: "my-channel", 
+        onEvent: (event: PusherEvent) => {
+          console.log(`Event received: ${event.eventName}`);
+        }
+      });
+    };
+
+    initializePusher();
+
+  }, [pusher]);
+
   React.useEffect(() => {
     const checkLoginStatus = async () => {
       const userId = await AsyncStorage.getItem('user_id');
@@ -92,6 +121,12 @@ const BottomNavigationExample = ({ navigation }: Props) => {
       ...({ unfocusedIcon: 'account-child-outline' }),
     },
     {
+      key: 'device',
+      title: 'Device',
+      focusedIcon: 'devices',
+      ...({ unfocusedIcon: 'devices' }),
+    },
+    {
       key: 'notif',
       title: 'Alert',
       focusedIcon: 'bell',
@@ -123,7 +158,8 @@ const BottomNavigationExample = ({ navigation }: Props) => {
                   home: Home,
                   child: Child,
                   notif: Notif,
-                  profile: Profile
+                  profile: Profile,
+                  device: Devices
                 })}
                 sceneAnimationEnabled={"opacity" !== undefined}
                 sceneAnimationType='opacity'
