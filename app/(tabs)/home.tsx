@@ -5,8 +5,11 @@ import { Text, Card, List, Avatar } from "react-native-paper";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { useTheme } from "@/hooks/useAppTheme";
 import dayjs from "dayjs";
+import { useUserContext } from "@/context/UserContext";
 
 const Home = () => {
+  const { userInfo } = useUserContext();
+
   const { currentTheme } = useTheme();
   const { authData } = useGoogleAuth();
 
@@ -53,13 +56,13 @@ const Home = () => {
               variant="titleLarge"
               style={{ fontWeight: "bold", color: currentTheme.textColor }}
             >
-              {"Jessa Ostia"}
+              {userInfo.fname || userInfo.username} {userInfo.lname ? userInfo.lname : ''}
             </Text>
           </View>
           <Avatar.Image
             size={48}
             source={
-                 { uri: "https://static.remove.bg/sample-gallery/graphics/bird-thumbnail.jpg" }
+                 { uri: userInfo.profilePicture }
             }
           />
         </View>
