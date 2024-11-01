@@ -142,7 +142,7 @@ const BottomNavigationExample = ({ navigation }: Props) => {
   ]);
   const { currentTheme } = useTheme()
   return (
-      <Provider >
+   
         <GestureHandlerRootView>
           <BottomSheetModalProvider>
             <View style={styles.screen}>
@@ -171,7 +171,7 @@ const BottomNavigationExample = ({ navigation }: Props) => {
           </BottomSheetModalProvider>
         </GestureHandlerRootView>
 
-      </Provider>
+
 
 
   );

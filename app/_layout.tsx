@@ -7,7 +7,8 @@ import { ThemeProvider } from "@/context/ThemeContext"; // Adjust the path if ne
 import { GoogleAuthProvider } from "@/context/GoogleAuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert, BackHandler } from "react-native";
-
+import { UserProvider } from "../context/UserContext";
+import { PaperProvider } from "react-native-paper";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
 
@@ -43,7 +44,7 @@ const RootLayout = () => {
     };
 
     requestPermissions();
-    
+
     // Handle back button press
     const backAction = () => {
       Alert.alert("Exit App", "Are you sure you want to exit the app?", [
@@ -71,19 +72,23 @@ const RootLayout = () => {
   }
 
   return (
-    <ThemeProvider>
-      <GoogleAuthProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="[...unmatched]"
-            options={{ headerShown: false }}
-          />
-        </Stack>
-      </GoogleAuthProvider>
-    </ThemeProvider>
+    <UserProvider>
+      <ThemeProvider>
+        <GoogleAuthProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="[...unmatched]"
+              options={{ headerShown: false }}
+            />
+          </Stack>
+        </GoogleAuthProvider>
+      </ThemeProvider>
+
+    </UserProvider>
+
   );
 };
 

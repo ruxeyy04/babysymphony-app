@@ -1,11 +1,11 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import {
   View,
-  Text,
   TouchableNativeFeedback,
   Platform,
   Alert,
   Image,
+  useColorScheme,
 } from "react-native";
 import {
   BottomSheetModal,
@@ -18,22 +18,29 @@ import { Link, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import * as Notifications from "expo-notifications";
-import { Button, Dialog, Portal } from "react-native-paper";
-import { useTheme } from "@/hooks/useAppTheme";
+import { Button, Dialog, Portal, Card, PaperProvider, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useUserContext } from "@/context/UserContext";
+import { useTheme } from "@/hooks/useAppTheme";
+const themes = {
+  light: {
+    background: "#EFF8FF",
+    appbar: "#D2EBFF",
+    textColor: "#2D2D2D",
+  },
+  dark: {
+    background: "#1B1B1F",
+    appbar: "#282831",
+    textColor: "#D7E0F9",
+  },
+};
 const Profile = () => {
   const [visible, setVisible] = useState(false);
+  const { userInfo, handleSignOut } = useUserContext();
+
   const insets = useSafeAreaInsets();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const userProfile = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+123 456 7890",
-    address: "123 Main St, Anytown, USA",
-    profilePicture: "https://via.placeholder.com/100",
-  };
 
   async function notification(title: string, body: string) {
     await Notifications.scheduleNotificationAsync({
@@ -46,23 +53,7 @@ const Profile = () => {
     });
   }
 
-  const handleSignOut = async () => {
-    try {
-      await clearUserData();
-      notification("Success", "Successfully logged-out");
-      router.push("/");
-    } catch (error) {
-      console.error("Failed to sign out", error);
-    }
-  };
 
-  const clearUserData = async () => {
-    try {
-      await AsyncStorage.removeItem("user_id");
-    } catch (error) {
-      console.error("Failed to clear auth data", error);
-    }
-  };
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -78,30 +69,40 @@ const Profile = () => {
     ),
     []
   );
-
+  const deviceColorScheme = useColorScheme();
+  const { theme, setTheme } = useTheme();
+  const currentTheme =
+    theme === "system_default"
+      ? deviceColorScheme === "dark"
+        ? themes.dark
+        : themes.light
+      : theme === "dark_mode"
+        ? themes.dark
+        : themes.light;
   return (
-    <>
-      <View className="items-center justify-center flex-1 p-4">
-        <View className="items-center p-5 bg-[#1f1f1f] rounded-lg shadow-md shadow-black mb-5 w-full">
-          <Image
-            source={{ uri: userProfile.profilePicture }}
-            className="w-24 h-24 mb-3 rounded-full"
-          />
-          <Text className="mb-1 text-2xl font-bold text-gray-500">
-            {userProfile.name}
-          </Text>
-          <Text className="text-lg text-gray-500">{userProfile.email}</Text>
-          <Text className="text-lg text-gray-500">{userProfile.phone}</Text>
-          <Text className="mt-1 text-lg text-center text-gray-500">
-            {userProfile.address}
-          </Text>
-        </View>
+      <View className="items-center justify-center flex-1 p-4 " style={{ backgroundColor: currentTheme.background }}>
+        <Card style={{ width: "90%", padding: 15, borderRadius: 15, elevation: 4 }}>
+          <View className="items-center">
+            <Image
+              source={{ uri: userInfo.profilePicture }}
+              className="w-24 h-24 mb-3 rounded-full"
+            />
+            <Text className="mb-1 text-2xl font-bold ">
+              {userInfo.fname || userInfo.username} {userInfo.lname ? userInfo.lname : ''}
+            </Text>
+            <Text className="text-lg ">{userInfo.email}</Text>
+            <Text className="text-lg ">{userInfo.contact || userInfo.username}</Text>
+            <Text className="mt-1 text-lg text-center ">
+              {userInfo.address || 'Address not provided'}
+            </Text>
+          </View>
 
-        <CustomButton
-          title="Profile Menu"
-          handlePress={handlePresentModalPress}
-          containerStyles="w-1/2 mt-5"
-        />
+          <CustomButton
+            title="Profile Menu"
+            handlePress={handlePresentModalPress}
+            containerStyles="w-full mt-5"
+          />
+        </Card>
 
         <BottomSheetModal
           ref={bottomSheetModalRef}
@@ -115,14 +116,16 @@ const Profile = () => {
             }}
           >
             <MenuItem
+             
               icon={<Ionicons name="settings-outline" size={24} />}
               label="Profile Setting"
               onPress={() => router.push("/settings")}
             />
             <MenuItem
+            
               icon={<Ionicons name="exit-outline" size={24} color="#fc0313" />}
               label="Logout"
-              onPress={() => setVisible(true)}
+              onPress={() => setVisible(true) }
             />
           </BottomSheetView>
         </BottomSheetModal>
@@ -145,7 +148,6 @@ const Profile = () => {
           </Dialog>
         </Portal>
       </View>
-    </>
   );
 };
 

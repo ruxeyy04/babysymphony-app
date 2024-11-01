@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Text, Button, Provider, Searchbar } from 'react-native-paper';
+import { useTheme } from '@/hooks/useAppTheme';
 
+
+const themes = {
+  light: {
+    background: "#EFF8FF",
+    appbar: "#D2EBFF",
+    textColor: "#2D2D2D",
+  },
+  dark: {
+    background: "#1B1B1F",
+    appbar: "#282831",
+    textColor: "#D7E0F9",
+  },
+};
 // Sample notifications data with acknowledgment property
 const sampleNotifications = [
-  { id: 1, title: 'Uncomfortable', description: 'John Doe is uncomfortable', date: '2024-10-16T09:00:00Z', acknowledged: 0 },
-  { id: 2, title: 'Hungry', description: 'Jane Doe is hungry', date: '2024-10-16T09:15:00Z', acknowledged: 0 },
-  { id: 3, title: 'Tired', description: 'John Doe is tired', date: '2024-10-16T09:30:00Z', acknowledged: 0 },
+  { id: 1, title: 'John Doe is uncomfortable',  date: '2024-10-16T09:00:00Z', acknowledged: 0 },
+  { id: 2, title: 'Hungry', date: '2024-10-16T09:15:00Z', acknowledged: 0 },
+  { id: 3, title: 'Tired',  date: '2024-10-16T09:30:00Z', acknowledged: 0 },
 ];
 
 const Notif = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [notifications, setNotifications] = useState(sampleNotifications); // State to track notifications
-
+  const { theme, setTheme } = useTheme();
+  const deviceColorScheme = useColorScheme();
   // Function to filter notifications based on the search query
   const filteredNotifications = notifications.filter((notification) =>
     notification.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -27,7 +42,14 @@ const Notif = () => {
       )
     );
   };
-
+  const currentTheme =
+    theme === "system_default"
+      ? deviceColorScheme === "dark"
+        ? themes.dark
+        : themes.light
+      : theme === "dark_mode"
+        ? themes.dark
+        : themes.light;
   // Function to format the date
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -42,8 +64,9 @@ const Notif = () => {
   };
 
   return (
-    <Provider>
-      <SafeAreaView style={styles.container}>
+  
+    <SafeAreaView style={[styles.container, { backgroundColor: currentTheme.background }]}>
+
         {/* Search Bar */}
         <Searchbar
           placeholder="Search Notifications"
@@ -60,7 +83,6 @@ const Notif = () => {
             <Card style={styles.card}>
               <Card.Content>
                 <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
                 <Text style={styles.date}>{formatDate(item.date)}</Text>
               </Card.Content>
               <Card.Actions style={styles.actions}>
@@ -79,7 +101,7 @@ const Notif = () => {
           contentContainerStyle={styles.list}
         />
       </SafeAreaView>
-    </Provider>
+  
   );
 };
 

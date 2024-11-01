@@ -5,8 +5,8 @@ import { AuthData, AuthContextType } from "@/types/AuthTypes"; // Adjust path as
 
 const defaultContextValue: AuthContextType = {
   authData: null,
-  saveAuthData: async () => {},
-  clearAuthData: async () => {},
+  saveAuthData: async () => { },
+  clearAuthData: async () => { },
 };
 interface AuthProviderProps {
   children: ReactNode;

@@ -2,6 +2,7 @@ import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Images } from "@/constants";
+import { MD3DarkTheme, MD3LightTheme, Provider as PaperProvider } from "react-native-paper";
 
 const themes = {
   light: {
@@ -70,9 +71,12 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
       ? themes.dark
       : themes.light;
 
+  const isDarkMode = currentTheme === themes.dark;
+  const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme, currentTheme }}>
-      {children}
+      <PaperProvider theme={paperTheme}>{children}</PaperProvider>
     </ThemeContext.Provider>
   );
 };

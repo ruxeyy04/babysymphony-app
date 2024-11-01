@@ -24,6 +24,7 @@ import { NavigatorContext } from "expo-router/build/views/Navigator";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useUserContext } from "@/context/UserContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -36,7 +37,7 @@ Notifications.setNotificationHandler({
 });
 
 const SignIn = () => {
-
+  const { setUserInfo } = useUserContext();
   const navigation = useNavigation();
   const [form, setForm] = useState({
     email: "",
@@ -95,14 +96,14 @@ const SignIn = () => {
   const submit = async () => {
     if (validateForm()) {
       try {
-        const response = await axios.post('http://192.168.1.224/api/login', {
+        const response = await axios.post('http://192.168.1.200/api/login', {
           username_email: form.email,
           password: form.password,
         });
 
         if (response.data.message === "Success") {
           await AsyncStorage.setItem('user_id', response.data.user_id.toString());
-        
+          await fetchUserProfile(response.data.user_id);
           notification("Success", "Successfully logged-in");
           router.replace("/home");
         } else {
@@ -116,7 +117,35 @@ const SignIn = () => {
       Alert.alert("Error", "Please fill in all fields");
     }
   };
+  const fetchUserProfile = async (userId: any) => {
+    try {
+      const response = await axios.get(`http://192.168.1.200/api/profile/get?userid=${userId}`);
+      const json = response.data;
 
+      if (json.success) {
+        const { data } = json;
+        setUserInfo({
+          fname: data.fname || '',
+          mname: data.mname || '',
+          lname: data.lname || '',
+          username: data.username,
+          email: data.email,
+          contact: data.contact || '',
+          address: data.address || '',
+          profilePicture: data.profile_img
+            ? `http://192.168.1.200/images/users/${data.profile_img}`
+            : 'http://192.168.1.200/images/users/default.png',
+          oldpassword: '',
+          password: '',
+          confirmPassword: '',
+        });
+      } else {
+        console.error("Failed to fetch user profile:", json.message);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
   const { currentTheme } = useTheme(); // Access the current theme
 
   const { saveAuthData } = useGoogleAuth(); //Access google hook

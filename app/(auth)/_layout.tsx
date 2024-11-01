@@ -6,7 +6,7 @@ import { StatusBar } from "expo-status-bar";
 const AuthLayout = () => {
 
   return (
-    <ThemeProvider>
+   
       <Stack>
         <Stack.Screen
           name="sign-in"
@@ -39,7 +39,7 @@ const AuthLayout = () => {
           }}
         />
       </Stack>
-    </ThemeProvider>
+   
 
 
   );
