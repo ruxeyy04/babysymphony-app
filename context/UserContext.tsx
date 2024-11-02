@@ -32,6 +32,7 @@ const UserContext = createContext<{
   setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
   handleSignOut: () => Promise<void>;
   setupPusher: () => void;
+  fetchUserProfile: () => void;
 } | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -159,7 +160,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ userInfo, setUserInfo, handleSignOut, setupPusher }}>
+    <UserContext.Provider value={{ userInfo, setUserInfo, handleSignOut, setupPusher, fetchUserProfile }}>
       {children}
     </UserContext.Provider>
   );

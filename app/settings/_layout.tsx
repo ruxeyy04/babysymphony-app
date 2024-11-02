@@ -57,7 +57,7 @@ const Settings = () => {
   const [profileImage, setProfileImage] = useState("http://192.168.1.200/images/users/default.png");
   const [userId, setUserId] = useState<string | null>(null);
 
-  const { userInfo, setUserInfo } = useUserContext();
+  const { userInfo, setUserInfo, fetchUserProfile } = useUserContext();
   const [errors, setErrors] = useState({
     fname: '',
     mname: '',
@@ -332,7 +332,7 @@ const Settings = () => {
 
       <GestureHandlerRootView style={styles.flexContainer}>
         <Appbar.Header mode="small" elevated style={[styles.appbar, { backgroundColor: currentTheme.appbar }]}>
-          <Appbar.BackAction onPress={() => navigation.goBack()} color={currentTheme.textColor} />
+          <Appbar.BackAction onPress={() =>{ navigation.goBack(); fetchUserProfile();}} color={currentTheme.textColor} />
           <Appbar.Content title="Settings" titleStyle={{ color: currentTheme.textColor }} />
         </Appbar.Header>
 
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   errorText: {
-    color: 'red',
+    color: '#b3271c',
     fontSize: 12,
     marginBottom: 8,
   },

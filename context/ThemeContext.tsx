@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { useColorScheme, StatusBar } from "react-native"; // Import StatusBar
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Images } from "@/constants";
 import { MD3DarkTheme, MD3LightTheme, Provider as PaperProvider } from "react-native-paper";
@@ -73,6 +73,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
 
   const isDarkMode = currentTheme === themes.dark;
   const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
+
+  // Update the StatusBar based on the theme
+  useEffect(() => {
+    StatusBar.setBarStyle(isDarkMode ? "light-content" : "dark-content");
+  }, [isDarkMode]);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, currentTheme }}>

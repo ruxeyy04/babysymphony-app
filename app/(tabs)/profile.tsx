@@ -124,7 +124,7 @@ const Profile = () => {
           borderTopLeftRadius: 13,
         }}
         backgroundStyle={{
-          backgroundColor: currentTheme.background
+          backgroundColor: currentTheme.background,
           }}
         ref={bottomSheetModalRef}
         index={0}
@@ -133,7 +133,7 @@ const Profile = () => {
       >
         <BottomSheetView
           style={{
-            paddingBottom: Platform.OS === "ios" ? insets.bottom - 12 : 0,
+            paddingBottom: Platform.OS === "ios" ? insets.bottom - 12 : 20,
           }}
         >
           <MenuItem
