@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/FormField";
 import { useState, useEffect } from "react";
-import * as Notifications from "expo-notifications";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -28,16 +27,9 @@ import { useUserContext } from "@/context/UserContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
 
 const SignIn = () => {
-  const { setUserInfo } = useUserContext();
+  const { setUserInfo, setupPusher } = useUserContext();
   const navigation = useNavigation();
   const [form, setForm] = useState({
     email: "",
@@ -82,16 +74,7 @@ const SignIn = () => {
     return isValid;
   };
 
-  async function notification(title: string, body: string) {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: title,
-        body: body,
-        data: { data: "goes here", test: { test1: "more data" } },
-      },
-      trigger: null,
-    });
-  }
+
 
   const submit = async () => {
     if (validateForm()) {
@@ -104,19 +87,27 @@ const SignIn = () => {
         if (response.data.message === "Success") {
           await AsyncStorage.setItem('user_id', response.data.user_id.toString());
           await fetchUserProfile(response.data.user_id);
-          notification("Success", "Successfully logged-in");
+          setupPusher();
           router.replace("/home");
         } else {
           Alert.alert("Error", response.data.message);
         }
       } catch (error) {
         console.error(error);
-        Alert.alert("Error", "An error occurred during login. Please try again.");
+
+        let errorMessage = "An error occurred during login.";
+        if (error instanceof Error) {
+          errorMessage = `An error occurred during login: ${error.message}`;
+        }
+
+        Alert.alert("Error", errorMessage);
       }
     } else {
       Alert.alert("Error", "Please fill in all fields");
     }
   };
+
+
   const fetchUserProfile = async (userId: any) => {
     try {
       const response = await axios.get(`http://192.168.1.200/api/profile/get?userid=${userId}`);
@@ -215,7 +206,7 @@ const SignIn = () => {
             onPress={() => navigation.goBack()}
             iconColor={`${currentTheme.textColor}`}
             style={{ backgroundColor: currentTheme.background, borderColor: "#dbdfe3", borderRadius: 10 }}
-              className="absolute top-0 border"
+            className="absolute top-0 border"
           />
           <View className="items-center">
             <Image
@@ -336,12 +327,12 @@ const SignIn = () => {
 
       </ScrollView>
       <Snackbar
-          visible={visible}
-          onDismiss={() => setVisible(false)}
-          duration={2000}
-        >
-          Under Development
-        </Snackbar>
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        duration={2000}
+      >
+        Under Development
+      </Snackbar>
     </SafeAreaView>
   );
 };

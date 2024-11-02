@@ -1,14 +1,11 @@
 import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
-import * as Notifications from "expo-notifications";
-import { router, SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemeProvider } from "@/context/ThemeContext"; // Adjust the path if necessary
 import { GoogleAuthProvider } from "@/context/GoogleAuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert, BackHandler } from "react-native";
 import { UserProvider } from "../context/UserContext";
-import { PaperProvider } from "react-native-paper";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
 
@@ -35,15 +32,7 @@ const RootLayout = () => {
   }, [fontsLoaded, error]);
 
   useEffect(() => {
-    // Request notification permissions
-    const requestPermissions = async () => {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== "granted") {
-        await Notifications.requestPermissionsAsync();
-      }
-    };
 
-    requestPermissions();
 
     // Handle back button press
     const backAction = () => {

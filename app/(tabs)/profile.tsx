@@ -17,7 +17,6 @@ import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import * as Notifications from "expo-notifications";
 import { Button, Dialog, Portal, Card, PaperProvider, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUserContext } from "@/context/UserContext";
@@ -45,16 +44,7 @@ const Profile = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
 
-  async function notification(title: string, body: string) {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: title,
-        body: body,
-        data: { data: "goes here", test: { test1: "more data" } },
-      },
-      trigger: null,
-    });
-  }
+
 
 
 
@@ -130,9 +120,12 @@ const Profile = () => {
       <BottomSheetModal
         handleIndicatorStyle={{ backgroundColor: currentTheme.textColor }}
         handleStyle={{
-          backgroundColor: currentTheme.background, borderTopRightRadius: 8,
-          borderTopLeftRadius: 8,
+          backgroundColor: currentTheme.background, borderTopRightRadius: 13,
+          borderTopLeftRadius: 13,
         }}
+        backgroundStyle={{
+          backgroundColor: currentTheme.background
+          }}
         ref={bottomSheetModalRef}
         index={0}
         enableDynamicSizing={true}
@@ -147,13 +140,16 @@ const Profile = () => {
 
             icon={<Ionicons name="settings-outline" size={24} color={currentTheme.textColor} />}
             label="Profile Setting"
-            onPress={() => router.push("/settings")}
+            onPress={() => {
+              bottomSheetModalRef.current?.dismiss();
+              router.push("/settings");
+            }}
           />
           <MenuItem
 
             icon={<Ionicons name="exit-outline" size={24} color="#fc0313" />}
             label="Logout"
-            onPress={() => setVisible(true)}
+            onPress={() => {setVisible(true); bottomSheetModalRef.current?.dismiss();} }
           />
         </BottomSheetView>
       </BottomSheetModal>

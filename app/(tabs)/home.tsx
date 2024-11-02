@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Image } from "react-native";
+import { View, ScrollView, Image, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Card, List, Avatar } from "react-native-paper";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
@@ -7,10 +7,33 @@ import { useTheme } from "@/hooks/useAppTheme";
 import dayjs from "dayjs";
 import { useUserContext } from "@/context/UserContext";
 
+const themes = {
+  light: {
+    background: "#EFF8FF",
+    appbar: "#D2EBFF",
+    textColor: "#2D2D2D",
+    iconColor: "#ffffff"
+  },
+  dark: {
+    background: "#1B1B1F",
+    appbar: "#282831",
+    textColor: "#D7E0F9",
+    iconColor: "#5f5575"
+  },
+};
 const Home = () => {
   const { userInfo } = useUserContext();
-
-  const { currentTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const deviceColorScheme = useColorScheme();
+  const currentTheme =
+    theme === "system_default"
+      ? deviceColorScheme === "dark"
+        ? themes.dark
+        : themes.light
+      : theme === "dark_mode"
+        ? themes.dark
+        : themes.light;
+        
   const { authData } = useGoogleAuth();
 
   const [currentTime, setCurrentTime] = useState(dayjs().format("HH:mm:ss"));
@@ -112,7 +135,7 @@ const Home = () => {
                 key={index}
                 title={child.name}
                 description={`Age: ${child.age}`}
-                left={(props) => <Avatar.Icon {...props} icon="account" />}
+                left={(props) => <Avatar.Icon {...props} icon="account" color={currentTheme.iconColor} />}
               />
             ))}
           </Card.Content>
@@ -129,7 +152,7 @@ const Home = () => {
               <List.Item
                 key={index}
                 title={device.name}
-                left={(props) => <Avatar.Icon {...props} icon="tablet" />}
+                left={(props) => <Avatar.Icon {...props} icon="tablet" color={currentTheme.iconColor} />}
               />
             ))}
           </Card.Content>
