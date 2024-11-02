@@ -45,7 +45,13 @@ const Child = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [visibleDelete, setDeleteVisible] = useState(false);
   const [visibleUpdate, setVisibleUpdate] = useState(false);
-  const [updatedChild, setUpdatedChild] = useState<Partial<Child>>({});
+  const [updatedChild, setUpdatedChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
+  const [errorUpdateChild, setErrorUpdateChild] = useState({
+    fname: '',
+    lname: '',
+    age: '',
+    gender: '',
+  });
   const [selectedChild, setSelectedChild] = useState<Child | null>(null);
 
   useEffect(() => {
@@ -104,13 +110,7 @@ const Child = () => {
   const [children, setChildren] = useState<Child[]>([]);
   const [newChild, setNewChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
   const [errorChild, setErrorChild] = useState({ fname: '', lname: '', age: '', gender: '' });
-  const [errorUpdateChild, setErrorUpdateChild] = useState({
-    fname: '',
-    mname: '',
-    lname: '',
-    age: '',
-    gender: '',
-  });
+
   const [visibleView, setVisibleView] = useState(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const filteredChildren = children.filter((child) =>
@@ -138,7 +138,7 @@ const Child = () => {
         if (child) {
           console.log(child)
           setSelectedChild(child);
-          setUpdatedChild(child);
+          setUpdatedChild(child as any);
           setVisibleUpdate(true);
         }
         break;
@@ -174,8 +174,8 @@ const Child = () => {
   };
   const handleUpdateChild = async () => {
     if (selectedChild) {
-      setErrorUpdateChild({ fname: '', mname: '', lname: '', age: '', gender: '' }); // Clear previous errors
-      
+      setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' }); // Clear previous errors
+
       try {
         const response = await axios.post('http://192.168.1.200/api/baby/update', {
           id: selectedChild.id,
@@ -186,26 +186,26 @@ const Child = () => {
           gender: updatedChild.gender,
           userid: userId, // Ensure you are passing the user ID
         });
-  
+
         if (response.data.success) {
           // Handle success
-          setChildren((prevChildren) =>
-            prevChildren.map((child) =>
+          setChildren((prevChildren: any) =>
+            prevChildren.map((child: any) =>
               child.id === selectedChild.id ? { ...child, ...updatedChild } : child
             )
           );
           setVisibleUpdate(false);
           setSelectedChild(null);
         } else {
-          setErrorUpdateChild(response.data.message); 
-          Alert.alert('Error updating child',  response.data.message)
+          setErrorUpdateChild(response.data.message);
+          // Alert.alert('Error updating child', response.data.message)
         }
       } catch (error) {
         console.error('Error updating child:', error);
       }
     }
   };
-  
+
 
 
   const handleAddChild = async () => {
@@ -283,7 +283,7 @@ const Child = () => {
   };
   return (
     <>
-     <ViewChildInfoDialog visible={visibleView} childId={selectedChild?.id} onClose={() => setVisibleView(false)} />
+      <ViewChildInfoDialog visible={visibleView} childId={selectedChild?.id} onClose={() => setVisibleView(false)} />
       {/* Delete Confirmation Dialog */}
       <Portal>
         <Dialog
@@ -308,7 +308,7 @@ const Child = () => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <SafeAreaView style={{ flex: 1, padding: 10 }}>
+      <SafeAreaView style={[{ flex: 1, padding: 16}, { backgroundColor: currentTheme.background } ]}>
 
         {/* Search Bar */}
 
@@ -362,7 +362,7 @@ const Child = () => {
           ))}
           {filteredChildren.length === 0 && (
             <Text style={{ textAlign: 'center', marginTop: 20 }}>
-              No children found matching "{searchQuery}".
+              No children found.
             </Text>
           )}
         </ScrollView>
@@ -441,7 +441,11 @@ const Child = () => {
       <Portal>
         <Dialog
           visible={visibleUpdate}
-          onDismiss={() => setVisibleUpdate(false)}
+          onDismiss={() => {
+            setVisibleUpdate(false);
+            setUpdatedChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
+            setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' });
+          }}
         >
           <Dialog.Title>Update Child Information</Dialog.Title>
           <Dialog.Content>
@@ -497,7 +501,11 @@ const Child = () => {
           </Dialog.Content>
 
           <Dialog.Actions>
-            <Button onPress={() => setVisibleUpdate(false)}>Cancel</Button>
+            <Button onPress={() => {
+              setVisibleUpdate(false);
+              setUpdatedChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
+              setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' });
+            }}>Cancel</Button>
             <Button onPress={handleUpdateChild}>Update</Button>
           </Dialog.Actions>
         </Dialog>

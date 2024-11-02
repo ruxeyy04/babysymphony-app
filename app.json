@@ -7,6 +7,10 @@
     "icon": "./assets/images/lullaby-icon.png",
     "scheme": "babysymphony",
     "userInterfaceStyle": "automatic",
+    "notification": {
+      "icon": "./assets/images/notif-icon.png",
+      "color": "#fff"
+    },
     "splash": {
       "image": "./assets/images/lullaby-splash.png",
       "resizeMode": "contain",
@@ -29,7 +33,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/assets/images/notif-icon.png",
+          "color": "#ffffff"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
