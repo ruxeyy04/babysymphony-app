@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, useColorScheme } from 'react-native';
+import { View, StyleSheet, useColorScheme, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Searchbar, Card, FAB, Portal, Menu, TouchableRipple, Divider, Modal, Button, TextInput, Provider as PaperProvider, Avatar, Text } from 'react-native-paper';
+import { Searchbar, Card, FAB, Portal, Menu, TouchableRipple, Divider, Modal, Button, TextInput, Provider as PaperProvider, Avatar, Text, Dialog } from 'react-native-paper';
 import { useTheme } from '@/hooks/useAppTheme';
 import { Dropdown } from 'react-native-paper-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import ViewChildInfoDialog from "@/components/ViewBabyInfoDialog";
 const themes = {
   light: {
     background: "#EFF8FF",
@@ -25,10 +26,14 @@ const OPTIONS = [
 interface Child {
   id: number;
   name: string;
+  fname: string;
+  mname: string;
+  lname: string;
   age: number;
-  info: string;
+  gender: string;
   deviceId: string | null;
 }
+
 interface ChildInfo {
   fname: string;
   mname: string;
@@ -38,6 +43,10 @@ interface ChildInfo {
 }
 const Child = () => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [visibleDelete, setDeleteVisible] = useState(false);
+  const [visibleUpdate, setVisibleUpdate] = useState(false);
+  const [updatedChild, setUpdatedChild] = useState<Partial<Child>>({});
+  const [selectedChild, setSelectedChild] = useState<Child | null>(null);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -51,27 +60,31 @@ const Child = () => {
         console.error('Failed to load user ID:', error);
       }
     };
-    const fetchChildren = async (userId: string) => {
-      try {
-        const response = await axios.get(`http://192.168.1.200/api/baby/get?userid=${userId}`);
-        if (response.data.success) {
-          const formattedChildren = response.data.data.map((child: any) => ({
-            id: child.id,
-            name: `${child.fname} ${child.lname}`,
-            age: child.months,
-            info: child.gender,
-            deviceId: child.device_id,
-          }));
-          setChildren(formattedChildren);
-        }
-      } catch (error) {
-        console.error('Error fetching children:', error);
-      }
-    };
+
 
     fetchUserId();
   }, []);
-
+  const fetchChildren = async (userId: string) => {
+    try {
+      const response = await axios.get(`http://192.168.1.200/api/baby/get?userid=${userId}`);
+      if (response.data.success) {
+        const formattedChildren = response.data.data.map((child: any) => ({
+          id: child.id,
+          fname: child.fname,
+          mname: child.mname,
+          lname: child.lname,
+          name: `${child.fname} ${child.lname}`,
+          age: child.months,
+          info: child.gender,
+          gender: child.gender,
+          deviceId: child.device_id,
+        }));
+        setChildren(formattedChildren);
+      }
+    } catch (error) {
+      console.error('Error fetching children:', error);
+    }
+  };
   const { theme } = useTheme();
   const deviceColorScheme = useColorScheme();
   const currentTheme =
@@ -91,12 +104,18 @@ const Child = () => {
   const [children, setChildren] = useState<Child[]>([]);
   const [newChild, setNewChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
   const [errorChild, setErrorChild] = useState({ fname: '', lname: '', age: '', gender: '' });
-
+  const [errorUpdateChild, setErrorUpdateChild] = useState({
+    fname: '',
+    mname: '',
+    lname: '',
+    age: '',
+    gender: '',
+  });
+  const [visibleView, setVisibleView] = useState(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const filteredChildren = children.filter((child) =>
-    child.name.toLowerCase().includes(searchQuery.toLowerCase())
+    `${child.fname} ${child.lname}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const handleMenuOpen = (id: number, anchor: { x: number; y: number }) => {
     setMenuAnchor(anchor);
     setVisibleMenu(id);
@@ -108,21 +127,86 @@ const Child = () => {
   };
 
   const handleMenuAction = (action: string, childId: number) => {
+    const child = children.find((c) => c.id === childId);
     switch (action) {
       case 'view':
+        setSelectedChild(child as Child);
         console.log(`View information for child ID: ${childId}`);
+        setVisibleView(true);
         break;
       case 'update':
-        console.log(`Update information for child ID: ${childId}`);
+        if (child) {
+          console.log(child)
+          setSelectedChild(child);
+          setUpdatedChild(child);
+          setVisibleUpdate(true);
+        }
         break;
       case 'delete':
-        console.log(`Delete child ID: ${childId}`);
+        if (child) {
+          setSelectedChild(child);
+          setDeleteVisible(true);
+        }
         break;
       default:
         break;
     }
     handleMenuClose();
   };
+  const handleDeleteBaby = async () => {
+    if (selectedChild) {
+      try {
+        const response = await axios.post('http://192.168.1.200/api/baby/delete', {
+          id: selectedChild.id,
+        });
+        if (response.data.success) {
+          setChildren(children.filter((child) => child.id !== selectedChild.id));
+          setDeleteVisible(false);
+          setSelectedChild(null);
+          console.log('Child deleted successfully');
+        } else {
+          console.error('Error deleting child:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error deleting child:', error);
+      }
+    }
+  };
+  const handleUpdateChild = async () => {
+    if (selectedChild) {
+      setErrorUpdateChild({ fname: '', mname: '', lname: '', age: '', gender: '' }); // Clear previous errors
+      
+      try {
+        const response = await axios.post('http://192.168.1.200/api/baby/update', {
+          id: selectedChild.id,
+          fname: updatedChild.fname,
+          mname: updatedChild.mname,
+          lname: updatedChild.lname,
+          age: updatedChild.age,
+          gender: updatedChild.gender,
+          userid: userId, // Ensure you are passing the user ID
+        });
+  
+        if (response.data.success) {
+          // Handle success
+          setChildren((prevChildren) =>
+            prevChildren.map((child) =>
+              child.id === selectedChild.id ? { ...child, ...updatedChild } : child
+            )
+          );
+          setVisibleUpdate(false);
+          setSelectedChild(null);
+        } else {
+          setErrorUpdateChild(response.data.message); 
+          Alert.alert('Error updating child',  response.data.message)
+        }
+      } catch (error) {
+        console.error('Error updating child:', error);
+      }
+    }
+  };
+  
+
 
   const handleAddChild = async () => {
     // Clear previous errors
@@ -142,9 +226,8 @@ const Child = () => {
       setErrorChild((prev) => ({ ...prev, gender: 'Gender is required.' }));
       valid = false;
     }
-    const ageNumber = parseInt(newChild.age, 10); // Use parseInt or parseFloat based on your needs
+    const ageNumber = parseInt(newChild.age, 10);
 
-    // Validate age
     if (isNaN(ageNumber) || ageNumber < 0 || ageNumber > 9) {
       setErrorChild((prev) => ({ ...prev, age: 'Age must be between 0 and 9 months.' }));
       valid = false;
@@ -164,6 +247,7 @@ const Child = () => {
         if (response.data.success) {
           alert(response.data.message);
           setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
+          fetchChildren(userId as any)
           setAddChildVisible(false);
         } else {
           alert(response.data.message); // If there's an error message from the backend
@@ -175,12 +259,6 @@ const Child = () => {
     }
   };
 
-  const handleGenderSelect = (value?: string) => {
-    setNewChild((prevChild) => ({
-      ...prevChild,
-      gender: value || '',
-    }));
-  };
   const handleInputChange = (field: keyof ChildInfo, value: string) => {
     setNewChild(prevState => ({
       ...prevState,
@@ -192,9 +270,45 @@ const Child = () => {
       [field]: '',
     }));
   };
+  const handleUpdateInputChange = (field: keyof ChildInfo, value: string) => {
+    setUpdatedChild(prevState => ({
+      ...prevState,
+      [field]: value,
+    }));
+
+    setErrorUpdateChild(prevErrors => ({
+      ...prevErrors,
+      [field]: '',
+    }));
+  };
   return (
     <>
-      <SafeAreaView style={{ flex: 1, padding: 16 }}>
+     <ViewChildInfoDialog visible={visibleView} childId={selectedChild?.id} onClose={() => setVisibleView(false)} />
+      {/* Delete Confirmation Dialog */}
+      <Portal>
+        <Dialog
+          onDismiss={() => setDeleteVisible(false)}
+          visible={visibleDelete}
+        >
+          <Dialog.Icon icon="alert" />
+          <Dialog.Title>Delete Confirmation</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to remove {selectedChild?.name} in the child list?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDeleteVisible(false)}>Cancel</Button>
+            <Button
+              onPress={() => {
+                setDeleteVisible(false);
+                handleDeleteBaby();
+              }}
+            >
+              Delete
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      <SafeAreaView style={{ flex: 1, padding: 10 }}>
 
         {/* Search Bar */}
 
@@ -206,9 +320,9 @@ const Child = () => {
         />
 
         {/* Child List */}
-        <View style={{ flex: 1 }}>
-          {children.map((child) => (
-            <View key={child.id} style={{ marginBottom: 8 }}>
+        <ScrollView style={{ flex: 1 }}>
+          {filteredChildren.map((child) => (
+            <View key={child.id} style={{ marginBottom: 8, marginHorizontal: 10, marginTop: 2 }}>
               <Card
                 onPress={(event) =>
                   handleMenuOpen(child.id, {
@@ -218,7 +332,7 @@ const Child = () => {
                 }
               >
                 <Card.Title
-                  title={child.name}
+                  title={`${child.fname} ${child.lname}`}
                   subtitle={`Age: ${child.age} months | Device ID: ${child.deviceId ?? 'None'}`}
                   left={(props) => <Avatar.Icon {...props} icon="account-child" />}
                 />
@@ -246,71 +360,148 @@ const Child = () => {
               </Menu>
             </View>
           ))}
-        </View>
+          {filteredChildren.length === 0 && (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>
+              No children found matching "{searchQuery}".
+            </Text>
+          )}
+        </ScrollView>
       </SafeAreaView>
 
       {/* Add Child Modal */}
-      <Modal
-        visible={addChildVisible}
-        onDismiss={() => {
-          setAddChildVisible(false);
-          setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
-          setErrorChild({ fname: '', lname: '', age: '', gender: '' });
-        }}
-        contentContainerStyle={[styles.modalContainer, { backgroundColor: currentTheme.background }]}
-      >
+      <Portal>
+        <Dialog
 
-        <TextInput
-          mode='outlined'
-          label="First Name"
-          value={newChild.fname}
-          onChangeText={(text) => handleInputChange('fname', text)}
-          style={styles.input}
-          error={!!errorChild.fname}
-        />
-        {errorChild.fname ? <Text style={styles.errorText}>{errorChild.fname}</Text> : null}
-        <TextInput
-          mode='outlined'
-          label="Middle Name"
-          value={newChild.mname}
-          onChangeText={(text) => handleInputChange('mname', text)}
-          style={styles.input}
-        />
-        <TextInput
-          mode='outlined'
-          label="Last Name"
-          value={newChild.lname}
-          onChangeText={(text) => handleInputChange('lname', text)}
-          style={styles.input}
-          error={!!errorChild.lname}
-        />
-        {errorChild.lname ? <Text style={styles.errorText}>{errorChild.lname}</Text> : null}
-        <TextInput
-          mode='outlined'
-          label="Age (0 - 9 Months)"
-          value={newChild.age}
-          onChangeText={(text) => handleInputChange('age', text)}
-          style={styles.input}
-          keyboardType="numeric"
-          error={!!errorChild.age}
-        />
-        {errorChild.age ? <Text style={styles.errorText}>{errorChild.age}</Text> : null}
-        <Dropdown
-          mode="outlined"
-          label="Gender"
-          placeholder="Select Gender"
-          options={OPTIONS}
-          value={newChild.gender || ''}
-          onSelect={(text) => handleInputChange('gender', text as string)}
-          error={!!errorChild.gender}
-        />
-        {errorChild.gender ? <Text style={styles.errorText}>{errorChild.gender}</Text> : null}
-        <Button mode="contained" onPress={handleAddChild} style={styles.button}>
-          Add Child
-        </Button>
-      </Modal>
+          visible={addChildVisible}
+          onDismiss={() => {
+            setAddChildVisible(false);
+            setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
+            setErrorChild({ fname: '', lname: '', age: '', gender: '' });
+          }}>
+          <Dialog.Title>Add Child Information</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              mode='outlined'
+              label="First Name"
+              value={newChild.fname}
+              onChangeText={(text) => handleInputChange('fname', text)}
+              style={styles.input}
+              error={!!errorChild.fname}
+            />
+            {errorChild.fname ? <Text style={styles.errorText}>{errorChild.fname}</Text> : null}
+            <TextInput
+              mode='outlined'
+              label="Middle Name"
+              value={newChild.mname}
+              onChangeText={(text) => handleInputChange('mname', text)}
+              style={styles.input}
+            />
+            <TextInput
+              mode='outlined'
+              label="Last Name"
+              value={newChild.lname}
+              onChangeText={(text) => handleInputChange('lname', text)}
+              style={styles.input}
+              error={!!errorChild.lname}
+            />
+            {errorChild.lname ? <Text style={styles.errorText}>{errorChild.lname}</Text> : null}
+            <TextInput
+              mode='outlined'
+              label="Age (0 - 9 Months)"
+              value={newChild.age}
+              onChangeText={(text) => handleInputChange('age', text)}
+              style={styles.input}
+              keyboardType="numeric"
+              error={!!errorChild.age}
+            />
+            {errorChild.age ? <Text style={styles.errorText}>{errorChild.age}</Text> : null}
+            <Dropdown
+              mode="outlined"
+              label="Gender"
+              placeholder="Select Gender"
+              options={OPTIONS}
+              value={newChild.gender || ''}
+              onSelect={(text) => handleInputChange('gender', text as string)}
+              error={!!errorChild.gender}
+            />
+            {errorChild.gender ? <Text style={styles.errorText}>{errorChild.gender}</Text> : null}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => {
+              setAddChildVisible(false);
+              setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
+              setErrorChild({ fname: '', lname: '', age: '', gender: '' });
+            }}>Cancel</Button>
+            <Button onPress={handleAddChild}>Save Data</Button>
+          </Dialog.Actions>
+        </Dialog>
 
+      </Portal>
+      {/* Update Child Modal */}
+      <Portal>
+        <Dialog
+          visible={visibleUpdate}
+          onDismiss={() => setVisibleUpdate(false)}
+        >
+          <Dialog.Title>Update Child Information</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              mode='outlined'
+              label="First Name"
+              value={updatedChild.fname || ''}
+              onChangeText={(text) => handleUpdateInputChange('fname', text)}
+              style={styles.input}
+              error={!!errorUpdateChild.fname}
+            />
+            {errorUpdateChild.fname ? <Text style={styles.errorText}>{errorUpdateChild.fname}</Text> : null}
 
+            <TextInput
+              mode='outlined'
+              label="Middle Name"
+              value={updatedChild.mname || ''}
+              onChangeText={(text) => handleUpdateInputChange('mname', text)}
+              style={styles.input}
+            />
+
+            <TextInput
+              mode='outlined'
+              label="Last Name"
+              value={updatedChild.lname || ''}
+              onChangeText={(text) => handleUpdateInputChange('lname', text)}
+              style={styles.input}
+              error={!!errorUpdateChild.lname}
+            />
+            {errorUpdateChild.lname ? <Text style={styles.errorText}>{errorUpdateChild.lname}</Text> : null}
+
+            <TextInput
+              mode='outlined'
+              label="Age (0 - 9 Months)"
+              value={String(updatedChild.age || '')}
+              onChangeText={(text) => handleUpdateInputChange('age', text)}
+              style={styles.input}
+              keyboardType="numeric"
+              error={!!errorUpdateChild.age}
+            />
+            {errorUpdateChild.age ? <Text style={styles.errorText}>{errorUpdateChild.age}</Text> : null}
+
+            <Dropdown
+              mode="outlined"
+              label="Gender"
+              placeholder="Select Gender"
+              options={OPTIONS}
+              value={updatedChild.gender || ''}
+              onSelect={(text) => handleUpdateInputChange('gender', text as string)}
+              error={!!errorUpdateChild.gender}
+            />
+            {errorUpdateChild.gender ? <Text style={styles.errorText}>{errorUpdateChild.gender}</Text> : null}
+          </Dialog.Content>
+
+          <Dialog.Actions>
+            <Button onPress={() => setVisibleUpdate(false)}>Cancel</Button>
+            <Button onPress={handleUpdateChild}>Update</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       {/* FAB Group */}
       <FAB.Group
         open={open}
