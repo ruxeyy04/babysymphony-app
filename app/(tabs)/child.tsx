@@ -175,7 +175,7 @@ const Child = () => {
   const handleUpdateChild = async () => {
     if (selectedChild) {
       setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' }); // Clear previous errors
-
+  
       try {
         const response = await axios.post('http://192.168.1.200/api/baby/update', {
           id: selectedChild.id,
@@ -184,9 +184,9 @@ const Child = () => {
           lname: updatedChild.lname,
           age: updatedChild.age,
           gender: updatedChild.gender,
-          userid: userId, // Ensure you are passing the user ID
+          userid: userId,
         });
-
+  
         if (response.data.success) {
           // Handle success
           setChildren((prevChildren: any) =>
@@ -196,16 +196,18 @@ const Child = () => {
           );
           setVisibleUpdate(false);
           setSelectedChild(null);
-        } else {
-          setErrorUpdateChild(response.data.message);
-          // Alert.alert('Error updating child', response.data.message)
+        } else if (response.data.validationError && Object.keys(response.data.validationError).length > 0) {
+          setErrorUpdateChild(response.data.validationError);
+        }
+         else {
+          Alert.alert('Info', response.data.message);
         }
       } catch (error) {
         console.error('Error updating child:', error);
       }
     }
   };
-
+  
 
 
   const handleAddChild = async () => {
@@ -250,7 +252,7 @@ const Child = () => {
           fetchChildren(userId as any)
           setAddChildVisible(false);
         } else {
-          alert(response.data.message); // If there's an error message from the backend
+          alert(response.data.message); 
         }
       } catch (error) {
         console.error(error);
@@ -291,7 +293,7 @@ const Child = () => {
           visible={visibleDelete}
         >
           <Dialog.Icon icon="alert" />
-          <Dialog.Title>Delete Confirmation</Dialog.Title>
+          <Dialog.Title className='text-center'>Delete Confirmation</Dialog.Title>
           <Dialog.Content>
             <Text>Are you sure you want to remove {selectedChild?.name} in the child list?</Text>
           </Dialog.Content>
@@ -322,8 +324,9 @@ const Child = () => {
         {/* Child List */}
         <ScrollView style={{ flex: 1 }}>
           {filteredChildren.map((child) => (
-            <View key={child.id} style={{ marginBottom: 8, marginHorizontal: 10, marginTop: 2 }}>
+            <View key={child.id} style={{ marginBottom: 8 }}>
               <Card
+              className='m-[4px] p-[10px]'
                 onPress={(event) =>
                   handleMenuOpen(child.id, {
                     x: event.nativeEvent.pageX,

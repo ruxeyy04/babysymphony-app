@@ -24,7 +24,7 @@ const ViewChildInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: (
         const fetchChildInfo = async () => {
             if (childId > 0) {
                 try {
-                    const response = await axios.get(`http://192.168.1.200/api/baby/getspecific.php?id=${childId}`);
+                    const response = await axios.get(`http://192.168.1.200/api/baby/getspecific?id=${childId}`);
                     if (response.data.success) {
                         setChildInfo(response.data.data);
                     } else {
