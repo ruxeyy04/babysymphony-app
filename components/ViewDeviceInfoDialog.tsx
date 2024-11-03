@@ -4,20 +4,6 @@ import axios from 'axios';
 import { StyleSheet, useColorScheme, View } from 'react-native';
 import { useTheme } from '@/hooks/useAppTheme';
 
-// Utility function to format the date
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true, // Set to true for 12-hour format
-    };
-    return date.toLocaleString('en-US', options);
-};
-
 const themes = {
 
     light: {
@@ -38,7 +24,7 @@ const ViewDeviceInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: 
     const [deviceInfo, setDeviceInfo] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const { theme } = useTheme();
-    
+
     const deviceColorScheme = useColorScheme();
     const currentTheme =
         theme === "system_default"
@@ -169,7 +155,7 @@ const ViewDeviceInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: 
                                 </View>
                                 <View style={styles.deviceDetails}>
                                     <Paragraph style={styles.label}>Added At:</Paragraph>
-                                    <Paragraph style={styles.deviceValue}>{formatDate(deviceInfo.device.created_at)}</Paragraph>
+                                    <Paragraph style={styles.deviceValue}>{deviceInfo.device.created_at}</Paragraph>
                                 </View>
                             </View>
                         )}

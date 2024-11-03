@@ -148,6 +148,7 @@ const Child = () => {
           setDeleteVisible(true);
         }
         break;
+        
       default:
         break;
     }
