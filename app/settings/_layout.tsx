@@ -21,6 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import axios from "axios";
 import { useUserContext } from "@/context/UserContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const themes = {
   light: {
@@ -47,6 +48,7 @@ interface UserInfo {
   confirmPassword: string;
 }
 const Settings = () => {
+  const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
   const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme
@@ -330,13 +332,13 @@ const Settings = () => {
 
   return (
 
-      <GestureHandlerRootView style={styles.flexContainer}>
+      <GestureHandlerRootView style={[styles.flexContainer, {backgroundColor: currentTheme.background}]}>
         <Appbar.Header mode="small" elevated style={[styles.appbar, { backgroundColor: currentTheme.appbar }]}>
           <Appbar.BackAction onPress={() =>{ navigation.goBack(); fetchUserProfile();}} color={currentTheme.textColor} />
           <Appbar.Content title="Settings" titleStyle={{ color: currentTheme.textColor }} />
         </Appbar.Header>
 
-        <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: currentTheme.background }]}>
+        <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: currentTheme.background, paddingBottom: insets.bottom  }]} >
 
           {/* Profile Picture Section */}
           <List.Section title="Profile Picture" titleStyle={[styles.sectionTitle, { color: currentTheme.textColor }]}>

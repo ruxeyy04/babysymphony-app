@@ -133,7 +133,7 @@ const Profile = () => {
       >
         <BottomSheetView
           style={{
-            paddingBottom: Platform.OS === "ios" ? insets.bottom - 12 : 20,
+            paddingBottom: insets.bottom,
           }}
         >
           <MenuItem
