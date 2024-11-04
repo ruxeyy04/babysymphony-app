@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "notification": {
       "icon": "./assets/images/notif-icon.png",
-      "color": "#fff"
+      "color": "#f08878"
     },
     "splash": {
       "image": "./assets/images/lullaby-splash.png",
@@ -37,8 +37,9 @@
       [
         "expo-notifications",
         {
-          "icon": "./local/assets/images/notif-icon.png",
-          "color": "#ffffff"
+          "icon": "./local/assets/notification-icon.png",
+          "color": "#ef1e00",
+          "defaultChannel": "default"
         }
       ]
     ],

@@ -159,7 +159,8 @@ const ViewDeviceInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: 
                                 </View>
                             </View>
                         )}
-                        <Paragraph style={styles.modalTitle}>Children Associated with Device</Paragraph>
+                        {deviceInfo.babies.length > 0 ? (<Paragraph style={styles.modalTitle}>Children Associated with Device</Paragraph>) : (null)}
+
                         {deviceInfo && deviceInfo.babies.length > 0 ? (
                             deviceInfo.babies.map((baby: any) => (
                                 <View key={baby.id} style={styles.childContainer}>

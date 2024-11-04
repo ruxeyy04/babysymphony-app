@@ -4,21 +4,7 @@ import axios from 'axios';
 import { StyleSheet, useColorScheme, View } from 'react-native';
 import { useTheme } from '@/hooks/useAppTheme';
 
-// Utility function to format the date
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true, // Set to true for 12-hour format
-    };
-    return date.toLocaleString('en-US', options);
-};
 const themes = {
-
     light: {
         background: "#EFF8FF",
         appbar: "#D2EBFF",
@@ -32,7 +18,14 @@ const themes = {
         bordercolor: "#6a676f"
     },
 };
-const ViewChildInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: () => void }> = ({ visible, childId, onClose }) => {
+
+interface Baby {
+    visible: boolean;
+    childId: any;
+    onClose: () => void;
+}
+
+const ViewChildInfoDialog: React.FC<Baby> = ({ visible, childId, onClose }) => {
     const [childInfo, setChildInfo] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -72,6 +65,7 @@ const ViewChildInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: (
         };
         fetchChildInfo();
     }, [childId, visible]);
+
     const styles = StyleSheet.create({
         modalTitle: {
             fontWeight: 'bold',
@@ -141,42 +135,55 @@ const ViewChildInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: (
 
     return (
         <Portal>
-              <Modal visible={visible} onDismiss={onClose} contentContainerStyle={[styles.modalContainer, { backgroundColor: currentTheme.background }]}>
-              <Paragraph style={styles.modalTitle}>Baby Information</Paragraph>
-              {loading ? (
-                        <Text style={styles.loadingText}>Loading...</Text>
-                    ) : error ? (
-                        <Text style={styles.loadingText}>{error}</Text>
-                    ) : childInfo ? ( // Ensure childInfo is not null before accessing its properties
+            <Modal visible={visible} onDismiss={onClose} contentContainerStyle={[styles.modalContainer, { backgroundColor: currentTheme.background }]}>
+                <Paragraph style={styles.modalTitle}>Baby Information</Paragraph>
+                {loading ? (
+                    <Text style={styles.loadingText}>Loading...</Text>
+                ) : error ? (
+                    <Text style={styles.loadingText}>{error}</Text>
+                ) : childInfo ? (
+                    <View>
                         <View style={styles.childContainer}>
                             <Text style={styles.label}>First Name:</Text>
-                            <Text style={styles.childValue}>{childInfo.fname}</Text>
-                            
+                            <Text style={styles.childValue}>{childInfo.baby.fname}</Text>
+
                             <Text style={styles.label}>Middle Name:</Text>
-                            <Text style={styles.childValue}>{childInfo.mname}</Text>
+                            <Text style={styles.childValue}>{childInfo.baby.mname}</Text>
 
                             <Text style={styles.label}>Last Name:</Text>
-                            <Text style={styles.childValue}>{childInfo.lname}</Text>
+                            <Text style={styles.childValue}>{childInfo.baby.lname}</Text>
 
                             <Text style={styles.label}>Gender:</Text>
-                            <Text style={styles.childValue}>{childInfo.gender}</Text>
+                            <Text style={styles.childValue}>{childInfo.baby.gender}</Text>
 
                             <Text style={styles.label}>Age (Months):</Text>
-                            <Text style={styles.childValue}>{childInfo.months}</Text>
+                            <Text style={styles.childValue}>{childInfo.baby.months}</Text>
 
                             <Text style={styles.label}>Created At:</Text>
-                            <Text style={styles.childValue}>{formatDate(childInfo.created_at)}</Text>
+                            <Text style={styles.childValue}>{childInfo.baby.created_at}</Text>
                         </View>
-                    ) : (
-                        <Text style={styles.loadingText}>No child information available.</Text>
-                    )}
-                    <Button mode="contained" onPress={onClose} style={styles.closeButton}>
+                        {childInfo.device.id != null ? (
+                            <Paragraph className='mt-2' style={styles.modalTitle}>Device Connected</Paragraph>
+                        ): (null)}
+
+                        {childInfo.device && childInfo.device.id != null ? (
+                            <View style={styles.childContainer}>
+                                <Paragraph style={styles.childName}>{childInfo.device.name} | {childInfo.device.brand} |  {childInfo.device.model}</Paragraph>
+                                <Paragraph style={styles.childDescription}>Device ID: {childInfo.device.id}</Paragraph>
+                            </View>
+                        ) : (
+                            <Paragraph style={styles.noChildrenText}>No Device Associated with this Baby</Paragraph>
+                        )}
+                    </View>
+                ) : (
+                    <Text style={styles.loadingText}>No child information available.</Text>
+                )}
+                <Button mode="contained" onPress={onClose} style={styles.closeButton}>
                     Close
                 </Button>
-              </Modal>
+            </Modal>
         </Portal>
     );
 };
-
 
 export default ViewChildInfoDialog;

@@ -7,6 +7,7 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ViewChildInfoDialog from "@/components/ViewBabyInfoDialog";
+import DeviceSelectionDialog from '@/components/DeviceSelectionDialog';
 const themes = {
   light: {
     background: "#EFF8FF",
@@ -44,8 +45,18 @@ interface ChildInfo {
 const Child = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [visibleDelete, setDeleteVisible] = useState(false);
+  const [removeAssignVisible, setRemoveAssignVisible] = useState(false);
   const [visibleUpdate, setVisibleUpdate] = useState(false);
+  const [assignVisible, setAssignVisible] = useState(false);
   const [updatedChild, setUpdatedChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [open, setOpen] = useState<boolean>(false);
+  const [visibleMenu, setVisibleMenu] = useState<number | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | null>(null);
+  const [addChildVisible, setAddChildVisible] = useState<boolean>(false);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [newChild, setNewChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
+  const [errorChild, setErrorChild] = useState({ fname: '', lname: '', age: '', gender: '' });
   const [errorUpdateChild, setErrorUpdateChild] = useState({
     fname: '',
     lname: '',
@@ -102,14 +113,7 @@ const Child = () => {
         ? themes.dark
         : themes.light;
 
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [open, setOpen] = useState<boolean>(false);
-  const [visibleMenu, setVisibleMenu] = useState<number | null>(null);
-  const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | null>(null);
-  const [addChildVisible, setAddChildVisible] = useState<boolean>(false);
-  const [children, setChildren] = useState<Child[]>([]);
-  const [newChild, setNewChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
-  const [errorChild, setErrorChild] = useState({ fname: '', lname: '', age: '', gender: '' });
+
 
   const [visibleView, setVisibleView] = useState(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
@@ -148,7 +152,20 @@ const Child = () => {
           setDeleteVisible(true);
         }
         break;
-        
+      case 'assign':
+        if (child) {
+          setSelectedChild(child);
+          setAssignVisible(true);
+          console.log(`Assigning Device for child ID: ${childId}`);
+        }
+        break;
+      case 'remove':
+        if (child) {
+          setSelectedChild(child);
+          setRemoveAssignVisible(true);
+          console.log(`Removing Device for child ID: ${childId}`);
+        }
+        break;
       default:
         break;
     }
@@ -176,7 +193,7 @@ const Child = () => {
   const handleUpdateChild = async () => {
     if (selectedChild) {
       setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' }); // Clear previous errors
-  
+
       try {
         const response = await axios.post('http://192.168.1.200/api/baby/update', {
           id: selectedChild.id,
@@ -187,7 +204,7 @@ const Child = () => {
           gender: updatedChild.gender,
           userid: userId,
         });
-  
+
         if (response.data.success) {
           // Handle success
           setChildren((prevChildren: any) =>
@@ -200,7 +217,7 @@ const Child = () => {
         } else if (response.data.validationError && Object.keys(response.data.validationError).length > 0) {
           setErrorUpdateChild(response.data.validationError);
         }
-         else {
+        else {
           Alert.alert('Info', response.data.message);
         }
       } catch (error) {
@@ -208,7 +225,29 @@ const Child = () => {
       }
     }
   };
-  
+  const handleRemoveAssignDevice = async () => {
+    if (selectedChild) {
+        console.log(`Removing device assignment for child ID: ${selectedChild.id}`);
+
+        try {
+            const response = await axios.post('http://192.168.1.200/api/baby/removeassign.php', {
+                baby_id: selectedChild.id,
+            });
+
+            if (response.data.success) {
+                Alert.alert('Success', response.data.message)
+                fetchChildren(userId as any)
+            } else {
+                console.warn('Error removing device assignment:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error during removal of device assignment:', error);
+        }
+    } else {
+        console.warn("No child selected for device unassignment");
+    }
+};
+
 
 
   const handleAddChild = async () => {
@@ -253,7 +292,7 @@ const Child = () => {
           fetchChildren(userId as any)
           setAddChildVisible(false);
         } else {
-          alert(response.data.message); 
+          alert(response.data.message);
         }
       } catch (error) {
         console.error(error);
@@ -287,6 +326,13 @@ const Child = () => {
   return (
     <>
       <ViewChildInfoDialog visible={visibleView} childId={selectedChild?.id} onClose={() => setVisibleView(false)} />
+      <DeviceSelectionDialog
+        visible={assignVisible}
+        onClose={() => setAssignVisible(false)}
+        childId={selectedChild?.id}
+        userID={userId}
+        fetchChildren={fetchChildren}
+      />
       {/* Delete Confirmation Dialog */}
       <Portal>
         <Dialog
@@ -296,7 +342,7 @@ const Child = () => {
           <Dialog.Icon icon="alert" />
           <Dialog.Title className='text-center'>Delete Confirmation</Dialog.Title>
           <Dialog.Content>
-            <Text>Are you sure you want to remove {selectedChild?.name} in the child list?</Text>
+            <Text>Are you sure you want to remove {selectedChild?.name}?</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteVisible(false)}>Cancel</Button>
@@ -311,12 +357,36 @@ const Child = () => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <SafeAreaView style={[{ flex: 1, padding: 16}, { backgroundColor: currentTheme.background } ]}>
+      {/* Remove Assign Device Confirmation Dialog */}
+      <Portal>
+        <Dialog
+          onDismiss={() => setRemoveAssignVisible(false)}
+          visible={removeAssignVisible}
+        >
+          <Dialog.Icon icon="alert" />
+          <Dialog.Title className='text-center'>Delete Confirmation</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to remove the assigned device of {selectedChild?.name}?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setRemoveAssignVisible(false)}>Cancel</Button>
+            <Button
+              onPress={() => {
+                setRemoveAssignVisible(false);
+                handleRemoveAssignDevice();
+              }}
+            >
+              Remove
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      <SafeAreaView style={[{ flex: 1, padding: 16 }, { backgroundColor: currentTheme.background }]}>
 
         {/* Search Bar */}
 
         <Searchbar
-          placeholder="Search Child"
+          placeholder="Search Baby"
           onChangeText={onChangeSearch}
           value={searchQuery}
           style={{ marginBottom: 16 }}
@@ -327,7 +397,7 @@ const Child = () => {
           {filteredChildren.map((child) => (
             <View key={child.id} style={{ marginBottom: 8 }}>
               <Card
-              className='m-[4px] p-[10px]'
+                className='m-[4px] p-[10px]'
                 onPress={(event) =>
                   handleMenuOpen(child.id, {
                     x: event.nativeEvent.pageX,

@@ -92,7 +92,7 @@ const BottomNavigationExample = ({ navigation }: Props) => {
     },
     {
       key: 'child',
-      title: 'Child',
+      title: 'Baby',
       focusedIcon: 'account-child',
       ...({ unfocusedIcon: 'account-child-outline' }),
     },
