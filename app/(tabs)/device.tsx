@@ -286,6 +286,9 @@ const Devices = () => {
         value={searchQuery}
         style={{ marginBottom: 16 }}
       />
+    {filteredDevices.length === 0 ? (
+      <Text style={{ textAlign: 'center', marginTop: 20 }}>No Device found.</Text>
+    ) : (
       <FlatList
         data={filteredDevices}
         keyExtractor={(item) => item.device_id}
@@ -321,6 +324,7 @@ const Devices = () => {
           </View>
         )}
       />
+    )}
 
       {/* View Device Information */}
       <ViewDeviceInfoDialog visible={viewDeviceVisible} childId={selectedDevice?.device_id} onClose={() => setViewDeviceVisible(false)} />

@@ -7,10 +7,6 @@
     "icon": "./assets/images/lullaby-icon.png",
     "scheme": "babysymphony",
     "userInterfaceStyle": "automatic",
-    "notification": {
-      "icon": "./assets/images/notif-icon.png",
-      "color": "#f08878"
-    },
     "splash": {
       "image": "./assets/images/lullaby-splash.png",
       "resizeMode": "contain",
@@ -37,8 +33,8 @@
       [
         "expo-notifications",
         {
-          "icon": "./local/assets/notification-icon.png",
-          "color": "#ef1e00",
+          "icon": "./assets/notification-icon.png",
+          "color": "#d0bcff",
           "defaultChannel": "default"
         }
       ]
