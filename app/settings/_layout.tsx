@@ -56,7 +56,7 @@ const Settings = () => {
   const { theme, setTheme } = useTheme();
   const deviceColorScheme = useColorScheme();
   const navigation = useNavigation();
-  const [profileImage, setProfileImage] = useState("http://192.168.1.200/images/users/default.png");
+  const [profileImage, setProfileImage] = useState("https://maide-deeplearning.bsit-ln.com/images/users/default.png");
   const [userId, setUserId] = useState<string | null>(null);
 
   const { userInfo, setUserInfo, fetchUserProfile } = useUserContext();
@@ -133,7 +133,7 @@ const Settings = () => {
       } as any);
       formData.append('user_id', userId as any);
       // Send a POST request to the PHP script
-      const response = await fetch('http://192.168.1.200/api/profile/changeprofileimg', {
+      const response = await fetch('https://maide-deeplearning.bsit-ln.com/api/profile/changeprofileimg', {
         method: 'POST',
         body: formData,
         headers: {
@@ -239,7 +239,7 @@ const Settings = () => {
   const updatePersonalInfo = async () => {
     if (validatePersonalInfo()) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/profile/changepersonalinfo', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/profile/changepersonalinfo', {
           id: userId,
           fname: userInfo.fname,
           mname: userInfo.mname,
@@ -270,7 +270,7 @@ const Settings = () => {
   const updateContactInfo = async () => {
     if (validateContactInfo()) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/profile/changecontact', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/profile/changecontact', {
           id: userId,
           contact: userInfo.contact,
           address: userInfo.address,
@@ -298,7 +298,7 @@ const Settings = () => {
   const updatePassword = async () => {
     if (validateSecurityInfo()) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/profile/changepassword', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/profile/changepassword', {
           id: userId,
           oldpassword: userInfo.oldpassword,
           password: userInfo.password,
