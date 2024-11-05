@@ -146,12 +146,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             password: '',
             confirmPassword: '',
           });
+
         }
+
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
       }
-      fetchDevice(userId);
-      fetchBaby(userId);
+
     }
   };
 
@@ -247,6 +248,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error('Failed to setup Pusher:', error);
       }
+      fetchDevice(userId);
+      fetchBaby(userId);
+      loadNotifications()
     }
   };
 
@@ -295,28 +299,33 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const handleSignOut = async () => {
     try {
-      const userId = await AsyncStorage.getItem('user_id');
-      setUserInfo({
-        fname: '',
-        mname: '',
-        lname: '',
-        username: '',
-        email: '',
-        contact: '',
-        address: '',
-        oldpassword: '',
-        password: '',
-        confirmPassword: '',
-        profilePicture: 'http://192.168.1.200/images/users/default.png',
-      });
-      await pusher.unsubscribe({ channelName: `private-user-channel.${userId}` });
-      await pusher.disconnect();
-      await AsyncStorage.removeItem('user_id');
-      router.push('/');
+        const userId = await AsyncStorage.getItem('user_id');
+        
+        // Clear all data
+        setUserInfo({
+            fname: '',
+            mname: '',
+            lname: '',
+            username: '',
+            email: '',
+            contact: '',
+            address: '',
+            oldpassword: '',
+            password: '',
+            confirmPassword: '',
+            profilePicture: 'http://192.168.1.200/images/users/default.png',
+        });
+        setNotifications([]); // Clear notifications
+        setBaby([]); // Clear babies
+        setDevices([]); // Clear devices
+        await pusher.unsubscribe({ channelName: `private-user-channel.${userId}` });
+        await pusher.disconnect();
+        await AsyncStorage.removeItem('user_id');
+        router.push('/');
     } catch (error) {
-      console.error('Failed to sign out', error);
+        console.error('Failed to sign out', error);
     }
-  };
+};
 
   return (
     <UserContext.Provider

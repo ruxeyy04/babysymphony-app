@@ -49,7 +49,7 @@ export default function App() {
               style={{ color: currentTheme.textColor }}
             >
               Discover Endless{"\n"}
-              Possibilities with <Text className="text-[#426ae1]">LullaBy</Text>
+              Possibilities with <Text className="text-[#426ae1]">MAide</Text>
             </Text>
           </View>
 
@@ -58,7 +58,7 @@ export default function App() {
             style={{ color: currentTheme.textColor }}
           >
             Where Compassion Meets Technology: Embark on a Journey of Care and
-            Innovation with LullaBy, the app that identifies your baby's cry.
+            Innovation with MAide, the app that identifies your baby's cry.
           </Text>
 
           <Button

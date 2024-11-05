@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "LullaBy: Baby Symphony",
+    "name": "MAide: Baby Symphony",
     "slug": "babysymphony",
     "version": "1.0.6",
     "orientation": "portrait",
@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.lullaby.babysymphony"
+      "package": "com.maide.babysymphony"
     },
     "web": {
       "bundler": "metro",
