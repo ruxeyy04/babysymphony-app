@@ -1,47 +1,32 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, useColorScheme } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, Text, Button, Provider, Searchbar } from 'react-native-paper';
-import { useTheme } from '@/hooks/useAppTheme';
-
+import React, { useState } from "react";
+import { View, StyleSheet, FlatList, Alert, useColorScheme } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Card, Text, Button, Searchbar } from "react-native-paper";
+import { useTheme } from "@/hooks/useAppTheme";
+import { useUserContext } from "@/context/UserContext";
+import { router } from "expo-router";
+import { useTabNavigation } from "@/context/TabNavigationContext";
 
 const themes = {
-  light: {
-    background: "#EFF8FF",
-    appbar: "#D2EBFF",
-    textColor: "#2D2D2D",
-  },
-  dark: {
-    background: "#1B1B1F",
-    appbar: "#282831",
-    textColor: "#D7E0F9",
-  },
+  light: { background: "#EFF8FF", appbar: "#D2EBFF", textColor: "#2D2D2D" },
+  dark: { background: "#1B1B1F", appbar: "#282831", textColor: "#D7E0F9" },
 };
-// Sample notifications data with acknowledgment property
-const sampleNotifications = [
-  { id: 1, title: 'John Doe is uncomfortable',  date: '2024-10-16T09:00:00Z', acknowledged: 0 },
-  { id: 2, title: 'Hungry', date: '2024-10-16T09:15:00Z', acknowledged: 0 },
-  { id: 3, title: 'Tired',  date: '2024-10-16T09:30:00Z', acknowledged: 0 },
-];
 
 const Notif = () => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [notifications, setNotifications] = useState(sampleNotifications); // State to track notifications
-  const { theme, setTheme } = useTheme();
+  const { setIndex } = useTabNavigation();  // Use the context here
+
+  const handleCardPress = () => {
+    setIndex(2); // Change to the 'device' tab (index 2)
+  };
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { notifications, acknowledgeNotification, deleteNotif } = useUserContext();
+  const { theme } = useTheme();
   const deviceColorScheme = useColorScheme();
-  // Function to filter notifications based on the search query
+
   const filteredNotifications = notifications.filter((notification) =>
     notification.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Function to acknowledge a notification
-  const handleAcknowledge = (id: number) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
-        notification.id === id ? { ...notification, acknowledged: 1 } : notification
-      )
-    );
-  };
   const currentTheme =
     theme === "system_default"
       ? deviceColorScheme === "dark"
@@ -50,46 +35,55 @@ const Notif = () => {
       : theme === "dark_mode"
         ? themes.dark
         : themes.light;
-  // Function to format the date
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    };
-    return new Intl.DateTimeFormat('en-US', options).format(new Date(dateString));
+
+  // Function to confirm and delete a notification
+  const confirmDelete = (id: number) => {
+    Alert.alert(
+      "Delete Notification",
+      "Are you sure you want to delete this notification?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteNotif(id),
+        },
+      ]
+    );
   };
 
   return (
-  
-    <SafeAreaView style={[styles.container, { backgroundColor: currentTheme.background }]}>
-
-        {/* Search Bar */}
-        <Searchbar
-          placeholder="Search Notifications"
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchBar}
-        />
-
-        {/* Notifications List */}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: currentTheme.background }]}
+    >
+      <Searchbar
+        placeholder="Search Notifications"
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+        style={styles.searchBar}
+      />
+      {filteredNotifications.length === 0 ? (
+        <Text style={{ textAlign: 'center', marginTop: 20 }}>No Notification Yet.</Text>
+      ) : (
         <FlatList
           data={filteredNotifications}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <Card style={styles.card}>
+            <Card
+              style={styles.card}
+              onLongPress={() => confirmDelete(item.id)} 
+            >
               <Card.Content>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.date}>{formatDate(item.date)}</Text>
+                <Text style={styles.title}>{item.description}</Text>
+                <Text style={styles.date}>
+                  {item.title} | {item.created_at}
+                </Text>
               </Card.Content>
               <Card.Actions style={styles.actions}>
-                {item.acknowledged === 0 && ( // Only show button if not acknowledged
-                  <Button 
-                    mode="contained" 
-                    onPress={() => handleAcknowledge(item.id)} 
+                {item.acknowledge === 0 && (
+                  <Button
+                    mode="contained"
+                    onPress={() => acknowledgeNotification(item.id)}
                     style={styles.button}
                   >
                     Acknowledge
@@ -100,47 +94,20 @@ const Notif = () => {
           )}
           contentContainerStyle={styles.list}
         />
-      </SafeAreaView>
-  
+      )}
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  searchBar: {
-    marginBottom: 16,
-  },
-  list: {
-    paddingBottom: 16,
-  },
-  card: {
-    marginBottom: 16,
-    borderRadius: 8,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  description: {
-    fontSize: 14,
-    color: '#666666', // Grey color for description text
-  },
-  date: {
-    fontSize: 12,
-    color: '#999999', // Lighter grey for date text
-    marginBottom: 8,
-  },
-  actions: {
-    justifyContent: 'flex-end',
-  },
-  button: {
-    borderRadius: 20, // Rounded button for aesthetics
-  },
+  container: { flex: 1, padding: 16 },
+  searchBar: { marginBottom: 16 },
+  list: { paddingBottom: 16 },
+  card: { marginBottom: 16, borderRadius: 8, elevation: 3 },
+  title: { fontSize: 18, fontWeight: "bold", marginBottom: 4 },
+  date: { fontSize: 12, color: "#999999", marginBottom: 8 },
+  actions: { justifyContent: "flex-end" },
+  button: { borderRadius: 20 },
 });
 
 export default Notif;

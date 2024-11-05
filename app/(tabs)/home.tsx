@@ -39,12 +39,12 @@ const Home = () => {
   const [currentTime, setCurrentTime] = useState(dayjs().format("HH:mm:ss"));
   const [recentAlert, setRecentAlert] = useState("No alerts at this time");
   const [children, setChildren] = useState([
-    { name: "John Doe", age: 5 },
-    { name: "Jane Doe", age: 3 },
+    { name: "John Doe", age: '5 Months' },
+    { name: "Juan Cruz", age: '3 Months' },
   ]);
   const [devices, setDevices] = useState([
-    { id: 1, name: "Smart Thermometer" },
-    { id: 2, name: "Baby Monitor" },
+    { id: 1, name: "Device ID: LBSYMP36581652" },
+    { id: 2, name: "Device ID: LBSYMP36581651" },
   ]);
 
   const [currentDateTime, setCurrentDateTime] = useState({

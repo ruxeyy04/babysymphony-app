@@ -452,7 +452,7 @@ const Child = () => {
             setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
             setErrorChild({ fname: '', lname: '', age: '', gender: '' });
           }}>
-          <Dialog.Title>Add Child Information</Dialog.Title>
+          <Dialog.Title>Add Baby Information</Dialog.Title>
           <Dialog.Content>
             <TextInput
               mode='outlined'
@@ -521,7 +521,7 @@ const Child = () => {
             setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' });
           }}
         >
-          <Dialog.Title>Update Child Information</Dialog.Title>
+          <Dialog.Title>Update Baby Information</Dialog.Title>
           <Dialog.Content>
             <TextInput
               mode='outlined'
@@ -589,7 +589,7 @@ const Child = () => {
         open={open}
         icon={open ? 'minus' : 'plus'}
         actions={[
-          { icon: 'plus', label: 'Add Child', onPress: () => setAddChildVisible(true) },
+          { icon: 'plus', label: 'Add Baby', onPress: () => setAddChildVisible(true) },
         ]}
         onStateChange={({ open }: { open: boolean }) => setOpen(open)}
         visible={true}
