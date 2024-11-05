@@ -79,7 +79,7 @@ const SignIn = () => {
   const submit = async () => {
     if (validateForm()) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/login', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/login', {
           username_email: form.email,
           password: form.password,
         });
@@ -110,7 +110,7 @@ const SignIn = () => {
 
   const fetchUserProfile = async (userId: any) => {
     try {
-      const response = await axios.get(`http://192.168.1.200/api/profile/get?userid=${userId}`);
+      const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/profile/get?userid=${userId}`);
       const json = response.data;
 
       if (json.success) {
@@ -124,8 +124,8 @@ const SignIn = () => {
           contact: data.contact || '',
           address: data.address || '',
           profilePicture: data.profile_img
-            ? `http://192.168.1.200/images/users/${data.profile_img}`
-            : 'http://192.168.1.200/images/users/default.png',
+            ? `https://maide-deeplearning.bsit-ln.com/images/users/${data.profile_img}`
+            : 'https://maide-deeplearning.bsit-ln.com/images/users/default.png',
           oldpassword: '',
           password: '',
           confirmPassword: '',

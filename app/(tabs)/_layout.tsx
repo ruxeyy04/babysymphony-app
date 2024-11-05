@@ -18,7 +18,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Home from './home';
 import Profile from './profile';
 import Child from './child';
-import Create from './create';
 import Notif from './notif';
 import Devices from './device';
 

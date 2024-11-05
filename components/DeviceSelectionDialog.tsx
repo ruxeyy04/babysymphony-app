@@ -51,7 +51,7 @@ const DeviceSelectionDialog: React.FC<DeviceSelectionDialogProps> = ({ visible, 
     useEffect(() => {
         const fetchVacantDevices = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.200/api/baby/vacantdevice?userid=${userID}`);
+                const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/baby/vacantdevice?userid=${userID}`);
                 if (response.data.success) {
                     setDevices(response.data.data);
                 } else {
@@ -79,7 +79,7 @@ const DeviceSelectionDialog: React.FC<DeviceSelectionDialogProps> = ({ visible, 
             console.log(`Assigning to child ID: ${childId}`);
     
             try {
-                const response = await axios.post('http://192.168.1.200/api/baby/assign.php', {
+                const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/assign.php', {
                     device_id: selectedDeviceId,
                     baby_id: childId,
                 });

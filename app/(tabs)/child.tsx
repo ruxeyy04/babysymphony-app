@@ -86,7 +86,7 @@ const Child = () => {
   }, []);
   const fetchChildren = async (userId: string) => {
     try {
-      const response = await axios.get(`http://192.168.1.200/api/baby/get?userid=${userId}`);
+      const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/baby/get?userid=${userId}`);
       if (response.data.success) {
         const formattedChildren = response.data.data.map((child: any) => ({
           id: child.id,
@@ -177,7 +177,7 @@ const Child = () => {
   const handleDeleteBaby = async () => {
     if (selectedChild) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/baby/delete', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/delete', {
           id: selectedChild.id,
         });
         if (response.data.success) {
@@ -199,7 +199,7 @@ const Child = () => {
       setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' }); // Clear previous errors
 
       try {
-        const response = await axios.post('http://192.168.1.200/api/baby/update', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/update', {
           id: selectedChild.id,
           fname: updatedChild.fname,
           mname: updatedChild.mname,
@@ -235,7 +235,7 @@ const Child = () => {
         console.log(`Removing device assignment for child ID: ${selectedChild.id}`);
 
         try {
-            const response = await axios.post('http://192.168.1.200/api/baby/removeassign.php', {
+            const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/removeassign.php', {
                 baby_id: selectedChild.id,
             });
 
@@ -282,7 +282,7 @@ const Child = () => {
 
     if (valid) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/baby/add', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/add', {
           fname: newChild.fname,
           mname: newChild.mname,
           lname: newChild.lname,

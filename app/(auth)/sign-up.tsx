@@ -55,7 +55,7 @@ const SignUp = () => {
   const submit = async () => {
     if (validate()) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/register', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/register', {
           username: form.username,
           email: form.email,
           password: form.password,

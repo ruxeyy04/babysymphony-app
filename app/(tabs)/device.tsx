@@ -90,7 +90,7 @@ const Devices = () => {
 
   const fetchDevice = async (userId: string) => {
     try {
-      const response = await axios.get(`http://192.168.1.200/api/device/get?userid=${userId}`);
+      const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/get?userid=${userId}`);
       if (response.data.success) {
         const devices = response.data.data.map((device: any) => ({
           device_id: device.id, name: device.name, brand: device.brand, model: device.model, created_at: device.created_at
@@ -165,7 +165,7 @@ const Devices = () => {
     }
     if (valid) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/device/add', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/device/add', {
           device_id: newDevice.device_id,
           name: newDevice.name,
           model: newDevice.model,
@@ -194,7 +194,7 @@ const Devices = () => {
       setErrorUpdateDevice({ device_id: '', name: '', brand: '', model: '' }); // Clear previous errors
 
       try {
-        const response = await axios.post('http://192.168.1.200/api/device/update', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/device/update', {
           id: selectedDevice.device_id,
           name: updatedDevice.name,
           brand: updatedDevice.brand,
@@ -227,7 +227,7 @@ const Devices = () => {
   const handleDeleteDevice = async () => {
     if (selectedDevice) {
       try {
-        const response = await axios.post('http://192.168.1.200/api/device/delete', {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/device/delete', {
           id: selectedDevice.device_id,
         });
         if (response.data.success) {

@@ -87,7 +87,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     oldpassword: '',
     password: '',
     confirmPassword: '',
-    profilePicture: 'http://192.168.1.200/images/users/default.png',
+    profilePicture: 'https://maide-deeplearning.bsit-ln.com/images/users/default.png',
   });
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [booleanNotif, setBooleanNotif] = useState<boolean>(false);
@@ -127,7 +127,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const userId = await AsyncStorage.getItem('user_id');
     if (userId) {
       try {
-        const response = await fetch(`http://192.168.1.200/api/profile/get?userid=${userId}`);
+        const response = await fetch(`https://maide-deeplearning.bsit-ln.com/api/profile/get?userid=${userId}`);
         const json = await response.json();
         if (json.success) {
           const { data } = json;
@@ -140,8 +140,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             contact: data.contact || '',
             address: data.address || '',
             profilePicture: data.profile_img
-              ? `http://192.168.1.200/images/users/${data.profile_img}`
-              : 'http://192.168.1.200/images/users/default.png',
+              ? `https://maide-deeplearning.bsit-ln.com/images/users/${data.profile_img}`
+              : 'https://maide-deeplearning.bsit-ln.com/images/users/default.png',
             oldpassword: '',
             password: '',
             confirmPassword: '',
@@ -160,7 +160,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const userId = await AsyncStorage.getItem('user_id');
     if (userId) {
       try {
-        const response = await fetch(`http://192.168.1.200/api/notif/get?userid=${userId}`);
+        const response = await fetch(`https://maide-deeplearning.bsit-ln.com/api/notif/get?userid=${userId}`);
         const json = await response.json();
         if (json.success) {
           setNotifications(json.data);
@@ -172,7 +172,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
   const fetchDevice = async (userId: string) => {
     try {
-      const response = await axios.get(`http://192.168.1.200/api/device/get?userid=${userId}`);
+      const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/get?userid=${userId}`);
       if (response.data.success) {
         const listDevices = response.data.data.map((device: any) => ({
           device_id: device.id,
@@ -190,7 +190,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchBaby = async (userId: string) => {
     try {
-      const response = await axios.get(`http://192.168.1.200/api/baby/get?userid=${userId}`);
+      const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/baby/get?userid=${userId}`);
       if (response.data.success) {
         const formattedBaby = response.data.data.map((Baby: any) => ({
           id: Baby.id,
@@ -216,7 +216,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         await pusher.init({
           apiKey: '9cd89ff693706c8e73e0',
           cluster: 'ap1',
-          authEndpoint: 'http://192.168.1.200/api/pusher/auth',
+          authEndpoint: 'https://maide-deeplearning.bsit-ln.com/api/pusher/auth',
         });
         await pusher.connect();
 
@@ -266,7 +266,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const acknowledgeNotification = async (id: number) => {
     try {
-      await axios.post(`http://192.168.1.200/api/notif/acknowledge`, {
+      await axios.post(`https://maide-deeplearning.bsit-ln.com/api/notif/acknowledge`, {
         id: id
       });
       setNotifications((prev) =>
@@ -280,7 +280,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const deleteNotif = async (id: number) => {
     try {
       // Send delete request to backend
-      const response = await axios.post(`http://192.168.1.200/api/notif/delete`, {
+      const response = await axios.post(`https://maide-deeplearning.bsit-ln.com/api/notif/delete`, {
         id: id,
       });
 
@@ -313,7 +313,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             oldpassword: '',
             password: '',
             confirmPassword: '',
-            profilePicture: 'http://192.168.1.200/images/users/default.png',
+            profilePicture: 'https://maide-deeplearning.bsit-ln.com/images/users/default.png',
         });
         setNotifications([]); // Clear notifications
         setBaby([]); // Clear babies

@@ -40,7 +40,7 @@ const ViewDeviceInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: 
             setLoading(true); // Start loading
             if (childId) {
                 try {
-                    const response = await axios.get(`http://192.168.1.200/api/device/getspecific?id=${childId}`);
+                    const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/getspecific?id=${childId}`);
                     if (response.data.success) {
                         setDeviceInfo(response.data.data);
                     } else {
