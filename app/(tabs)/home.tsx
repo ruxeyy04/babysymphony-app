@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, Image, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, Card, List, Avatar } from "react-native-paper";
+import { Text, Card, List, Avatar, Button } from "react-native-paper";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { useTheme } from "@/hooks/useAppTheme";
 import dayjs from "dayjs";
 import { useUserContext } from "@/context/UserContext";
+import { useTabNavigation } from "@/context/TabNavigationContext";
 
 const themes = {
   light: {
@@ -22,7 +23,9 @@ const themes = {
   },
 };
 const Home = () => {
-  const { userInfo } = useUserContext();
+  const { setIndex } = useTabNavigation();  // Use the context here
+
+  const { userInfo, notifications, listBabies, listDevices } = useUserContext();
   const { theme, setTheme } = useTheme();
   const deviceColorScheme = useColorScheme();
   const currentTheme =
@@ -33,7 +36,6 @@ const Home = () => {
       : theme === "dark_mode"
         ? themes.dark
         : themes.light;
-        
   const { authData } = useGoogleAuth();
 
   const [currentTime, setCurrentTime] = useState(dayjs().format("HH:mm:ss"));
@@ -61,7 +63,9 @@ const Home = () => {
     }, 1000); // Updates every second
     return () => clearInterval(timer); // Cleanup on unmount
   }, []);
-
+  const recentNotifications = notifications.slice(0, 3);
+  const recentChildren = listBabies.slice(0, 3);
+  const recentDevices = listDevices.slice(0, 3);
   return (
     <SafeAreaView
       className="flex-1"
@@ -85,7 +89,7 @@ const Home = () => {
           <Avatar.Image
             size={48}
             source={
-                 { uri: userInfo.profilePicture }
+              { uri: userInfo.profilePicture }
             }
           />
         </View>
@@ -111,52 +115,126 @@ const Home = () => {
         {/* Recent Alert */}
         <Card style={{ marginBottom: 16 }}>
           <Card.Title
-            title="Recent Alert"
-            left={(props) => (
-              <Avatar.Icon {...props} icon="bell-alert" size={40} />
-            )}
+            title="Recent Notification"
+            left={(props) => <Avatar.Icon {...props} icon="bell-alert" size={40} />}
           />
           <Card.Content>
-            <Text variant="bodyMedium" style={{ color: currentTheme.textColor }}>
-              {recentAlert}
-            </Text>
+            {recentNotifications.length > 0 ? (
+              recentNotifications.slice(0, 3).map((notif, index) => (
+                <List.Item
+                  key={index}
+                  title={notif.title}
+                  description={notif.description}
+                  left={(props) => (
+                    <Avatar.Icon {...props} icon="alert-circle" size={24} color={currentTheme.iconColor} />
+                  )}
+                  style={{
+                    paddingVertical: 8,
+                    borderBottomWidth: index < recentNotifications.length - 1 ? 1 : 0,
+                    borderBottomColor: currentTheme.iconColor // Divider color
+                  }}
+                  titleStyle={{ fontWeight: 'bold' }}
+                  descriptionStyle={{ color: currentTheme.textColor }}
+                />
+              ))
+            ) : (
+              <Text style={{ color: currentTheme.textColor, textAlign: 'center', padding: 16 }}>
+                No Recent Notifications
+              </Text>
+            )}
           </Card.Content>
+          {recentNotifications.length > 3 && (
+            <Card.Actions>
+              <Button onPress={() => setIndex(3)} mode="text">
+                View More
+              </Button>
+            </Card.Actions>
+          )}
         </Card>
 
+
+
+
         {/* List of Children */}
-        <Card style={{ marginBottom: 16 }}>
+        <Card style={{ marginBottom: 16, borderRadius: 8, elevation: 2 }}>
           <Card.Title
-            title="Children"
+            title="Baby"
             left={(props) => <Avatar.Icon {...props} icon="account-child" size={40} />}
           />
           <Card.Content>
-            {children.map((child, index) => (
-              <List.Item
-                key={index}
-                title={child.name}
-                description={`Age: ${child.age}`}
-                left={(props) => <Avatar.Icon {...props} icon="account" color={currentTheme.iconColor} />}
-              />
-            ))}
+            {recentChildren.length > 0 ? (
+              recentChildren.slice(0, 3).map((child, index) => (
+                <List.Item
+                  key={index}
+                  title={child.name}
+                  description={`Age: ${child.age} Months`}
+                  left={(props) => (
+                    <Avatar.Icon {...props} icon="baby-face" size={30} color={currentTheme.iconColor} />
+                  )}
+                  style={{
+                    paddingVertical: 12,
+                    borderBottomWidth: index < recentChildren.length - 1 ? 1 : 0,
+                    borderBottomColor: currentTheme.iconColor, // Divider color
+                  }}
+                  titleStyle={{ fontWeight: 'bold', color: currentTheme.textColor }}
+                  descriptionStyle={{ color: currentTheme.textColor }}
+                />
+              ))
+            ) : (
+              <Text style={{ color: currentTheme.textColor, textAlign: 'center', padding: 16 }}>
+                No Recent Baby
+              </Text>
+            )}
           </Card.Content>
+          {listBabies.length > 3 && (
+            <Card.Actions style={{ justifyContent: 'flex-end' }}>
+              <Button onPress={() => setIndex(1)} mode="text" labelStyle={{ color: currentTheme.textColor }}>
+                View More
+              </Button>
+            </Card.Actions>
+          )}
         </Card>
 
+
         {/* List of Devices */}
-        <Card>
+        <Card style={{ marginBottom: 16, borderRadius: 8, elevation: 2 }}>
           <Card.Title
             title="Devices"
             left={(props) => <Avatar.Icon {...props} icon="devices" size={40} />}
           />
           <Card.Content>
-            {devices.map((device, index) => (
-              <List.Item
-                key={index}
-                title={device.name}
-                left={(props) => <Avatar.Icon {...props} icon="tablet" color={currentTheme.iconColor} />}
-              />
-            ))}
+            {recentDevices.length > 0 ? (
+              recentDevices.slice(0, 3).map((device, index) => (
+                <List.Item
+                  key={index}
+                  title={device.name}
+                  left={(props) => (
+                    <Avatar.Icon {...props} icon="tablet" size={30} color={currentTheme.iconColor} />
+                  )}
+                  style={{
+                    paddingVertical: 12,
+                    borderBottomWidth: index < recentDevices.length - 1 ? 1 : 0,
+                    borderBottomColor: currentTheme.iconColor, // Divider color
+                  }}
+                  titleStyle={{ fontWeight: 'bold', color: currentTheme.textColor }}
+                />
+              ))
+            ) : (
+              <Text style={{ color: currentTheme.textColor, textAlign: 'center', padding: 16 }}>
+                No Recent Devices
+              </Text>
+            )}
           </Card.Content>
+          {listDevices.length > 3 && (
+            <Card.Actions style={{ justifyContent: 'flex-end' }}>
+              <Button onPress={() => setIndex(2)} mode="text" labelStyle={{ color: currentTheme.textColor }}>
+                View More
+              </Button>
+            </Card.Actions>
+          )}
         </Card>
+
+
       </ScrollView>
     </SafeAreaView>
   );

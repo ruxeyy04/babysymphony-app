@@ -8,6 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ViewChildInfoDialog from "@/components/ViewBabyInfoDialog";
 import DeviceSelectionDialog from '@/components/DeviceSelectionDialog';
+import { useUserContext } from '@/context/UserContext';
+
 const themes = {
   light: {
     background: "#EFF8FF",
@@ -43,6 +45,7 @@ interface ChildInfo {
   gender: string;
 }
 const Child = () => {
+  const {fetchBaby} = useUserContext()
   const [userId, setUserId] = useState<string | null>(null);
   const [visibleDelete, setDeleteVisible] = useState(false);
   const [removeAssignVisible, setRemoveAssignVisible] = useState(false);
@@ -182,6 +185,7 @@ const Child = () => {
           setDeleteVisible(false);
           setSelectedChild(null);
           console.log('Child deleted successfully');
+          fetchBaby(userId as string)
         } else {
           console.error('Error deleting child:', response.data.message);
         }
@@ -212,6 +216,7 @@ const Child = () => {
               child.id === selectedChild.id ? { ...child, ...updatedChild } : child
             )
           );
+          fetchBaby(userId as string)
           setVisibleUpdate(false);
           setSelectedChild(null);
         } else if (response.data.validationError && Object.keys(response.data.validationError).length > 0) {
@@ -291,6 +296,7 @@ const Child = () => {
           setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
           fetchChildren(userId as any)
           setAddChildVisible(false);
+          fetchBaby(userId as string)
         } else {
           alert(response.data.message);
         }

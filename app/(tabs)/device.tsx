@@ -1,4 +1,5 @@
 import ViewDeviceInfoDialog from '@/components/ViewDeviceInfoDialog';
+import { useUserContext } from '@/context/UserContext';
 import { useTheme } from '@/hooks/useAppTheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -34,6 +35,8 @@ const themes = {
   },
 };
 const Devices = () => {
+  const { fetchDevice: loadDevices } = useUserContext();
+
   const [userId, setUserId] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const deviceColorScheme = useColorScheme();
@@ -175,6 +178,7 @@ const Devices = () => {
           setNewDevice({ device_id: '', name: '', brand: '', model: '', created_at: '' });
           setAddDeviceVisible(false)
           setDevices((prevDevices) => [...prevDevices, newDevice]);
+          loadDevices(userId as string)
         } else {
           console.log(response.data)
           Alert.alert('Warning', response.data.message);
@@ -207,6 +211,7 @@ const Devices = () => {
           );
           setUpdateDeviceVisible(false);
           setSelectedDevice(null);
+          loadDevices(userId as string)
         } else if (response.data.validationError && Object.keys(response.data.validationError).length > 0) {
           setErrorUpdateDevice(response.data.validationError);
         }
@@ -230,6 +235,7 @@ const Devices = () => {
           setDeleteVisible(false);
           setSelectedDevice(null);
           Alert.alert('Success', response.data.message)
+          loadDevices(userId as string)
         } else {
           Alert.alert('Warning', response.data.message)
           console.error('Error deleting child:', response.data.message);

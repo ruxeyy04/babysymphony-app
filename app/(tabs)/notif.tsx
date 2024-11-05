@@ -15,11 +15,9 @@ const themes = {
 const Notif = () => {
   const { setIndex } = useTabNavigation();  // Use the context here
 
-  const handleCardPress = () => {
-    setIndex(2); // Change to the 'device' tab (index 2)
-  };
+
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const { notifications, acknowledgeNotification, deleteNotif } = useUserContext();
+  const { notifications, acknowledgeNotification, deleteNotif, loadNotifications } = useUserContext();
   const { theme } = useTheme();
   const deviceColorScheme = useColorScheme();
 
@@ -46,7 +44,7 @@ const Notif = () => {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => deleteNotif(id),
+          onPress: () => {deleteNotif(id); loadNotifications},
         },
       ]
     );

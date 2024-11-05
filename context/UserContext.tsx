@@ -59,8 +59,8 @@ const UserContext = createContext<{
   userInfo: UserInfo;
   notifications: Notification[];
   booleanNotif: boolean;
-  devices: Device[];
-  baby: Baby[];
+  listDevices: Device[];
+  listBabies: Baby[];
   fetchDevice: (userId: string) => Promise<void>;
   fetchBaby: (userId: string) => Promise<void>;
   setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
@@ -68,13 +68,14 @@ const UserContext = createContext<{
   handleSignOut: () => Promise<void>;
   setupPusher: () => void;
   fetchUserProfile: () => void;
+  loadNotifications: () => void;
   acknowledgeNotification: (id: number) => Promise<void>;
   deleteNotif: (id: number) => Promise<void>;
 } | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [baby, setBaby] = useState<Baby[]>([]);
+  const [listDevices, setDevices] = useState<Device[]>([]);
+  const [listBabies, setBaby] = useState<Baby[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo>({
     fname: '',
     mname: '',
@@ -172,17 +173,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await axios.get(`http://192.168.1.200/api/device/get?userid=${userId}`);
       if (response.data.success) {
-        const devices = response.data.data.map((device: any) => ({
+        const listDevices = response.data.data.map((device: any) => ({
           device_id: device.id,
           name: device.name,
           brand: device.brand,
           model: device.model,
           created_at: device.created_at,
         }));
-        setDevices(devices);
+        setDevices(listDevices);
       }
     } catch (error) {
-      console.error('Error fetching devices:', error);
+      console.error('Error fetching listDevices:', error);
     }
   };
 
@@ -204,7 +205,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setBaby(formattedBaby);
       }
     } catch (error) {
-      console.error('Error fetching baby:', error);
+      console.error('Error fetching listBabies:', error);
     }
   };
   const setupPusher = async () => {
@@ -330,7 +331,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         fetchUserProfile,
         acknowledgeNotification,
         deleteNotif,
-        devices, baby, fetchDevice, fetchBaby
+        listDevices, listBabies, fetchDevice, fetchBaby,
+        loadNotifications
       }}
     >
       {children}
