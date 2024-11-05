@@ -95,7 +95,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const initializeApp = async () => {
-      await Notifications.getPermissionsAsync();
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        await Notifications.requestPermissionsAsync();
+      }
+
       await fetchUserProfile();
       await loadNotifications();
       await setupPusher();
