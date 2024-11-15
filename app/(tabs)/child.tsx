@@ -275,7 +275,7 @@ const Child = () => {
     }
     const ageNumber = parseInt(newChild.age, 10);
 
-    if (isNaN(ageNumber) || ageNumber < 0 || ageNumber > 9) {
+    if (isNaN(ageNumber) || ageNumber <= 0 || ageNumber >= 9) {
       setErrorChild((prev) => ({ ...prev, age: 'Age must be between 0 and 9 months.' }));
       valid = false;
     }

@@ -379,7 +379,6 @@ const Devices = () => {
               value={newDevice.model}
               onChangeText={(text) => handleInputChange('model', text)}
               style={styles.input}
-              keyboardType="numeric"
               error={!!errorDevice.model}
             />
             {errorDevice.model ? <Text style={styles.errorText}>{errorDevice.model}</Text> : null}

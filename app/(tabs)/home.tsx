@@ -143,7 +143,7 @@ const Home = () => {
               </Text>
             )}
           </Card.Content>
-          {recentNotifications.length > 3 && (
+          {notifications.length > 3 && (
             <Card.Actions>
               <Button onPress={() => setIndex(3)} mode="text">
                 View More
