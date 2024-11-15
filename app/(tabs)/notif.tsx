@@ -21,9 +21,17 @@ const Notif = () => {
   const { theme } = useTheme();
   const deviceColorScheme = useColorScheme();
 
-  const filteredNotifications = notifications.filter((notification) =>
-    notification.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredNotifications = notifications.filter((notification) => {
+    const titleMatches = notification.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const createdAtMatches = notification.created_at
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+  
+    return titleMatches || createdAtMatches;
+  });
+  
 
   const currentTheme =
     theme === "system_default"
