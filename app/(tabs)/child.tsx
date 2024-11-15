@@ -275,8 +275,8 @@ const Child = () => {
     }
     const ageNumber = parseInt(newChild.age, 10);
 
-    if (isNaN(ageNumber) || ageNumber <= 0 || ageNumber >= 9) {
-      setErrorChild((prev) => ({ ...prev, age: 'Age must be between 0 and 9 months.' }));
+    if (isNaN(ageNumber) || ageNumber <= -1 || ageNumber > 8) {
+      setErrorChild((prev) => ({ ...prev, age: 'Age must be between 0 and 8 months.' }));
       valid = false;
     }
 
@@ -487,7 +487,7 @@ const Child = () => {
             {errorChild.lname ? <Text style={styles.errorText}>{errorChild.lname}</Text> : null}
             <TextInput
               mode='outlined'
-              label="Age (0 - 9 Months)"
+              label="Age (0 - 8 Months)"
               value={newChild.age}
               onChangeText={(text) => handleInputChange('age', text)}
               style={styles.input}
@@ -559,7 +559,7 @@ const Child = () => {
 
             <TextInput
               mode='outlined'
-              label="Age (0 - 9 Months)"
+              label="Age (0 - 8 Months)"
               value={String(updatedChild.age || '')}
               onChangeText={(text) => handleUpdateInputChange('age', text)}
               style={styles.input}

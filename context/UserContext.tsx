@@ -231,21 +231,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               console.log(`Event received: ${event.eventName}`);
               const parsedData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
               console.log(parsedData.title, parsedData.description);
-              Alert.alert(parsedData.title, parsedData.description)
-              setBooleanNotif(true);
-              const newNotification = {
-                id: Math.random(),
-                title: parsedData.title,
-                description: parsedData.description,
-                acknowledge: 0,
-                created_at: formatDate(new Date().toISOString()),
-              };
-              setNotifications((prev) => [newNotification, ...prev]);
-
-
-
-
-              sendNotification(newNotification.title, newNotification.description);
+              if (parsedData.title != "Recording" && parsedData.title != "Stop Recording") {
+                Alert.alert(parsedData.title, parsedData.description)
+                setBooleanNotif(true);
+                const newNotification = {
+                  id: parsedData.inserted_id,
+                  title: parsedData.title,
+                  description: parsedData.description,
+                  acknowledge: 0,
+                  created_at: formatDate(new Date().toISOString()),
+                };
+                setNotifications((prev) => [newNotification, ...prev]);
+                sendNotification(newNotification.title, newNotification.description);
+              } else {
+                sendNotification(parsedData.title, parsedData.description);
+              }
             }
           },
         });
@@ -303,33 +303,33 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const handleSignOut = async () => {
     try {
-        const userId = await AsyncStorage.getItem('user_id');
-        
-        // Clear all data
-        setUserInfo({
-            fname: '',
-            mname: '',
-            lname: '',
-            username: '',
-            email: '',
-            contact: '',
-            address: '',
-            oldpassword: '',
-            password: '',
-            confirmPassword: '',
-            profilePicture: 'https://maide-deeplearning.bsit-ln.com/images/users/default.png',
-        });
-        setNotifications([]); // Clear notifications
-        setBaby([]); // Clear babies
-        setDevices([]); // Clear devices
-        await pusher.unsubscribe({ channelName: `private-user-channel.${userId}` });
-        await pusher.disconnect();
-        await AsyncStorage.removeItem('user_id');
-        router.push('/');
+      const userId = await AsyncStorage.getItem('user_id');
+
+      // Clear all data
+      setUserInfo({
+        fname: '',
+        mname: '',
+        lname: '',
+        username: '',
+        email: '',
+        contact: '',
+        address: '',
+        oldpassword: '',
+        password: '',
+        confirmPassword: '',
+        profilePicture: 'https://maide-deeplearning.bsit-ln.com/images/users/default.png',
+      });
+      setNotifications([]); // Clear notifications
+      setBaby([]); // Clear babies
+      setDevices([]); // Clear devices
+      await pusher.unsubscribe({ channelName: `private-user-channel.${userId}` });
+      await pusher.disconnect();
+      await AsyncStorage.removeItem('user_id');
+      router.push('/');
     } catch (error) {
-        console.error('Failed to sign out', error);
+      console.error('Failed to sign out', error);
     }
-};
+  };
 
   return (
     <UserContext.Provider
