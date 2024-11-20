@@ -28,19 +28,14 @@ const OPTIONS = [
 ];
 interface Child {
   id: number;
-  name: string;
-  fname: string;
-  mname: string;
-  lname: string;
+  nickname: string;
   age: number;
   gender: string;
   deviceId: string | null;
 }
 
 interface ChildInfo {
-  fname: string;
-  mname: string;
-  lname: string;
+  nickname: string;
   age: string;
   gender: string;
 }
@@ -51,18 +46,17 @@ const Child = () => {
   const [removeAssignVisible, setRemoveAssignVisible] = useState(false);
   const [visibleUpdate, setVisibleUpdate] = useState(false);
   const [assignVisible, setAssignVisible] = useState(false);
-  const [updatedChild, setUpdatedChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
+  const [updatedChild, setUpdatedChild] = useState({ nickname: '', age: '', gender: '' });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [visibleMenu, setVisibleMenu] = useState<number | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | null>(null);
   const [addChildVisible, setAddChildVisible] = useState<boolean>(false);
   const [children, setChildren] = useState<Child[]>([]);
-  const [newChild, setNewChild] = useState({ fname: '', mname: '', lname: '', age: '', gender: '' });
-  const [errorChild, setErrorChild] = useState({ fname: '', lname: '', age: '', gender: '' });
+  const [newChild, setNewChild] = useState({ nickname: '', age: '', gender: '' });
+  const [errorChild, setErrorChild] = useState({ nickname: '', age: '', gender: '' });
   const [errorUpdateChild, setErrorUpdateChild] = useState({
-    fname: '',
-    lname: '',
+    nickname: '',
     age: '',
     gender: '',
   });
@@ -90,10 +84,7 @@ const Child = () => {
       if (response.data.success) {
         const formattedChildren = response.data.data.map((child: any) => ({
           id: child.id,
-          fname: child.fname,
-          mname: child.mname,
-          lname: child.lname,
-          name: `${child.fname} ${child.lname}`,
+          nickname: child.nickname,
           age: child.months,
           info: child.gender,
           gender: child.gender,
@@ -121,7 +112,7 @@ const Child = () => {
   const [visibleView, setVisibleView] = useState(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const filteredChildren = children.filter((child) =>
-    `${child.fname} ${child.lname}`.toLowerCase().includes(searchQuery.toLowerCase())
+    `${child.nickname}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
   const handleMenuOpen = (id: number, anchor: { x: number; y: number }) => {
     setMenuAnchor(anchor);
@@ -196,14 +187,12 @@ const Child = () => {
   };
   const handleUpdateChild = async () => {
     if (selectedChild) {
-      setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' }); // Clear previous errors
+      setErrorUpdateChild({ nickname: '', age: '', gender: '' }); // Clear previous errors
 
       try {
         const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/update', {
           id: selectedChild.id,
-          fname: updatedChild.fname,
-          mname: updatedChild.mname,
-          lname: updatedChild.lname,
+          nickname: updatedChild.nickname,
           age: updatedChild.age,
           gender: updatedChild.gender,
           userid: userId,
@@ -257,16 +246,12 @@ const Child = () => {
 
   const handleAddChild = async () => {
     // Clear previous errors
-    setErrorChild({ fname: '', lname: '', age: '', gender: '' });
+    setErrorChild({ nickname: '', age: '', gender: '' });
 
     // Validate input fields
     let valid = true;
-    if (!newChild.fname) {
-      setErrorChild((prev) => ({ ...prev, fname: 'First Name is required.' }));
-      valid = false;
-    }
-    if (!newChild.lname) {
-      setErrorChild((prev) => ({ ...prev, lname: 'Last Name is required.' }));
+    if (!newChild.nickname) {
+      setErrorChild((prev) => ({ ...prev, nickname: 'Nickname is required.' }));
       valid = false;
     }
     if (!newChild.gender) {
@@ -283,9 +268,7 @@ const Child = () => {
     if (valid) {
       try {
         const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/add', {
-          fname: newChild.fname,
-          mname: newChild.mname,
-          lname: newChild.lname,
+          nickname: newChild.nickname,
           gender: newChild.gender,
           months: newChild.age,
           userid: userId,
@@ -293,7 +276,7 @@ const Child = () => {
 
         if (response.data.success) {
           alert(response.data.message);
-          setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
+          setNewChild({ nickname: '', age: '', gender: '' });
           fetchChildren(userId as any)
           setAddChildVisible(false);
           fetchBaby(userId as string)
@@ -348,7 +331,7 @@ const Child = () => {
           <Dialog.Icon icon="alert" />
           <Dialog.Title className='text-center'>Delete Confirmation</Dialog.Title>
           <Dialog.Content>
-            <Text>Are you sure you want to remove {selectedChild?.name}?</Text>
+            <Text>Are you sure you want to remove {selectedChild?.nickname}?</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteVisible(false)}>Cancel</Button>
@@ -372,7 +355,7 @@ const Child = () => {
           <Dialog.Icon icon="alert" />
           <Dialog.Title className='text-center'>Delete Confirmation</Dialog.Title>
           <Dialog.Content>
-            <Text>Are you sure you want to remove the assigned device of {selectedChild?.name}?</Text>
+            <Text>Are you sure you want to remove the assigned device of {selectedChild?.nickname}?</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setRemoveAssignVisible(false)}>Cancel</Button>
@@ -412,7 +395,7 @@ const Child = () => {
                 }
               >
                 <Card.Title
-                  title={`${child.fname} ${child.lname}`}
+                  title={`${child.nickname}`}
                   subtitle={`Age: ${child.age} months | Device ID: ${child.deviceId ?? 'None'}`}
                   left={(props) => <Avatar.Icon {...props} icon="account-child" />}
                 />
@@ -455,36 +438,21 @@ const Child = () => {
           visible={addChildVisible}
           onDismiss={() => {
             setAddChildVisible(false);
-            setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
-            setErrorChild({ fname: '', lname: '', age: '', gender: '' });
+            setNewChild({ nickname: '', age: '', gender: '' });
+            setErrorChild({ nickname: '', age: '', gender: '' });
           }}>
           <Dialog.Title>Add Baby Information</Dialog.Title>
           <Dialog.Content>
             <TextInput
               mode='outlined'
-              label="First Name"
-              value={newChild.fname}
-              onChangeText={(text) => handleInputChange('fname', text)}
+              label="Nickname"
+              value={newChild.nickname}
+              onChangeText={(text) => handleInputChange('nickname', text)}
               style={styles.input}
-              error={!!errorChild.fname}
+              error={!!errorChild.nickname}
             />
-            {errorChild.fname ? <Text style={styles.errorText}>{errorChild.fname}</Text> : null}
-            <TextInput
-              mode='outlined'
-              label="Middle Name"
-              value={newChild.mname}
-              onChangeText={(text) => handleInputChange('mname', text)}
-              style={styles.input}
-            />
-            <TextInput
-              mode='outlined'
-              label="Last Name"
-              value={newChild.lname}
-              onChangeText={(text) => handleInputChange('lname', text)}
-              style={styles.input}
-              error={!!errorChild.lname}
-            />
-            {errorChild.lname ? <Text style={styles.errorText}>{errorChild.lname}</Text> : null}
+            {errorChild.nickname ? <Text style={styles.errorText}>{errorChild.nickname}</Text> : null}
+    
             <TextInput
               mode='outlined'
               label="Age (0 - 8 Months)"
@@ -509,8 +477,8 @@ const Child = () => {
           <Dialog.Actions>
             <Button onPress={() => {
               setAddChildVisible(false);
-              setNewChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
-              setErrorChild({ fname: '', lname: '', age: '', gender: '' });
+              setNewChild({ nickname: '', age: '', gender: '' });
+              setErrorChild({ nickname: '', age: '', gender: '' });
             }}>Cancel</Button>
             <Button onPress={handleAddChild}>Save Data</Button>
           </Dialog.Actions>
@@ -523,39 +491,21 @@ const Child = () => {
           visible={visibleUpdate}
           onDismiss={() => {
             setVisibleUpdate(false);
-            setUpdatedChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
-            setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' });
+            setUpdatedChild({ nickname: '', age: '', gender: '' });
+            setErrorUpdateChild({ nickname: '',  age: '',gender: '' });
           }}
         >
           <Dialog.Title>Update Baby Information</Dialog.Title>
           <Dialog.Content>
             <TextInput
               mode='outlined'
-              label="First Name"
-              value={updatedChild.fname || ''}
-              onChangeText={(text) => handleUpdateInputChange('fname', text)}
+              label="Nickname"
+              value={updatedChild.nickname || ''}
+              onChangeText={(text) => handleUpdateInputChange('nickname', text)}
               style={styles.input}
-              error={!!errorUpdateChild.fname}
+              error={!!errorUpdateChild.nickname}
             />
-            {errorUpdateChild.fname ? <Text style={styles.errorText}>{errorUpdateChild.fname}</Text> : null}
-
-            <TextInput
-              mode='outlined'
-              label="Middle Name"
-              value={updatedChild.mname || ''}
-              onChangeText={(text) => handleUpdateInputChange('mname', text)}
-              style={styles.input}
-            />
-
-            <TextInput
-              mode='outlined'
-              label="Last Name"
-              value={updatedChild.lname || ''}
-              onChangeText={(text) => handleUpdateInputChange('lname', text)}
-              style={styles.input}
-              error={!!errorUpdateChild.lname}
-            />
-            {errorUpdateChild.lname ? <Text style={styles.errorText}>{errorUpdateChild.lname}</Text> : null}
+            {errorUpdateChild.nickname ? <Text style={styles.errorText}>{errorUpdateChild.nickname}</Text> : null}
 
             <TextInput
               mode='outlined'
@@ -583,8 +533,8 @@ const Child = () => {
           <Dialog.Actions>
             <Button onPress={() => {
               setVisibleUpdate(false);
-              setUpdatedChild({ fname: '', mname: '', lname: '', age: '', gender: '' });
-              setErrorUpdateChild({ fname: '', lname: '', age: '', gender: '' });
+              setUpdatedChild({ nickname: '', age: '', gender: '' });
+              setErrorUpdateChild({ nickname: '', age: '', gender: '' });
             }}>Cancel</Button>
             <Button onPress={handleUpdateChild}>Update</Button>
           </Dialog.Actions>

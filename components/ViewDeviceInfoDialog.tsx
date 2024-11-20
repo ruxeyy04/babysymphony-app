@@ -146,14 +146,6 @@ const ViewDeviceInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: 
                                     <Paragraph style={styles.deviceValue}>{deviceInfo.device.name}</Paragraph>
                                 </View>
                                 <View style={styles.deviceDetails}>
-                                    <Paragraph style={styles.label}>Brand:</Paragraph>
-                                    <Paragraph style={styles.deviceValue}>{deviceInfo.device.brand}</Paragraph>
-                                </View>
-                                <View style={styles.deviceDetails}>
-                                    <Paragraph style={styles.label}>Model:</Paragraph>
-                                    <Paragraph style={styles.deviceValue}>{deviceInfo.device.model}</Paragraph>
-                                </View>
-                                <View style={styles.deviceDetails}>
                                     <Paragraph style={styles.label}>Added At:</Paragraph>
                                     <Paragraph style={styles.deviceValue}>{deviceInfo.device.created_at}</Paragraph>
                                 </View>
@@ -164,7 +156,7 @@ const ViewDeviceInfoDialog: React.FC<{ visible: boolean; childId: any; onClose: 
                         {deviceInfo && deviceInfo.babies.length > 0 ? (
                             deviceInfo.babies.map((baby: any) => (
                                 <View key={baby.id} style={styles.childContainer}>
-                                    <Paragraph style={styles.childName}>{baby.fname} {baby.mname} {baby.lname}</Paragraph>
+                                    <Paragraph style={styles.childName}>{baby.nickname}</Paragraph>
                                     <Paragraph style={styles.childDescription}>Gender: {baby.gender}, Age: {baby.months} months</Paragraph>
                                 </View>
                             ))

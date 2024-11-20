@@ -11,15 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 interface DeviceInfo {
   device_id: string;
   name: string;
-  brand: string;
-  model: string;
   created_at: string;
 }
 interface Devices {
   device_id: string;
   name: string;
-  brand: string;
-  model: string;
   created_at: string;
 }
 const themes = {
@@ -93,7 +89,7 @@ const Devices = () => {
       const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/get?userid=${userId}`);
       if (response.data.success) {
         const devices = response.data.data.map((device: any) => ({
-          device_id: device.id, name: device.name, brand: device.brand, model: device.model, created_at: device.created_at
+          device_id: device.id, name: device.name, created_at: device.created_at
         }));
         setDevices(devices);
       }
@@ -144,7 +140,7 @@ const Devices = () => {
   };
 
   const handleAddDevice = async () => {
-    setErrorDevice({ device_id: '', name: '', brand: '', model: '' });
+    setErrorDevice({ device_id: '', name: ''});
 
     let valid = true;
     if (!newDevice.device_id) {
@@ -155,27 +151,19 @@ const Devices = () => {
       setErrorDevice((prev) => ({ ...prev, name: 'Device Name is required' }));
       valid = false;
     }
-    if (!newDevice.brand) {
-      setErrorDevice((prev) => ({ ...prev, brand: 'Device Brand is required' }));
-      valid = false;
-    }
-    if (!newDevice.model) {
-      setErrorDevice((prev) => ({ ...prev, model: 'Device Model is required' }));
-      valid = false;
-    }
+
     if (valid) {
       try {
         const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/device/add', {
           device_id: newDevice.device_id,
           name: newDevice.name,
-          model: newDevice.model,
-          brand: newDevice.brand,
+
           userid: userId,
         });
 
         if (response.data.success) {
           Alert.alert('Success', response.data.message)
-          setNewDevice({ device_id: '', name: '', brand: '', model: '', created_at: '' });
+          setNewDevice({ device_id: '', name: '', created_at: '' });
           setAddDeviceVisible(false)
           setDevices((prevDevices) => [...prevDevices, newDevice]);
           loadDevices(userId as string)
@@ -191,14 +179,12 @@ const Devices = () => {
   };
   const handleUpdateDevice = async () => {
     if (selectedDevice) {
-      setErrorUpdateDevice({ device_id: '', name: '', brand: '', model: '' }); // Clear previous errors
+      setErrorUpdateDevice({ device_id: '', name: '', }); // Clear previous errors
 
       try {
         const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/device/update', {
           id: selectedDevice.device_id,
           name: updatedDevice.name,
-          brand: updatedDevice.brand,
-          model: updatedDevice.model,
           userid: userId,
         });
 
@@ -254,10 +240,10 @@ const Devices = () => {
       device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       device.device_id.includes(searchQuery)
   );
-  const [newDevice, setNewDevice] = useState({ device_id: '', name: '', brand: '', model: '', created_at: '' });
-  const [errorDevice, setErrorDevice] = useState({ device_id: '', name: '', brand: '', model: '' });
-  const [updatedDevice, setUpdatedDevice] = useState({ device_id: '', name: '', brand: '', model: '' });
-  const [errorUpdateDevice, setErrorUpdateDevice] = useState({ device_id: '', name: '', brand: '', model: '' });
+  const [newDevice, setNewDevice] = useState({ device_id: '', name: '', created_at: '' });
+  const [errorDevice, setErrorDevice] = useState({ device_id: '', name: '' });
+  const [updatedDevice, setUpdatedDevice] = useState({ device_id: '', name: '' });
+  const [errorUpdateDevice, setErrorUpdateDevice] = useState({ device_id: '', name: '' });
   const handleInputChange = (field: keyof DeviceInfo, value: string) => {
     setNewDevice(prevState => ({
       ...prevState,
@@ -308,7 +294,7 @@ const Devices = () => {
             >
               <Card.Title
                 title={`Device ID: ${item.device_id}`}
-                subtitle={`${item.name} | ${item.brand}`}
+                subtitle={`${item.name} | ${item.created_at}`}
                 left={(props) => <Avatar.Icon {...props} icon="chip" />}
               />
               <Card.Content>
@@ -341,8 +327,8 @@ const Devices = () => {
           visible={addDeviceVisible}
           onDismiss={() => {
             setAddDeviceVisible(false);
-            setNewDevice({ device_id: '', name: '', brand: '', model: '', created_at: '' });
-            setErrorDevice({ device_id: '', name: '', brand: '', model: '' });
+            setNewDevice({ device_id: '', name: '', created_at: '' });
+            setErrorDevice({ device_id: '', name: ''});
           }}>
           <Dialog.Title>Add Device Information</Dialog.Title>
           <Dialog.Content>
@@ -364,31 +350,15 @@ const Devices = () => {
               error={!!errorDevice.name}
             />
             {errorDevice.name ? <Text style={styles.errorText}>{errorDevice.name}</Text> : null}
-            <TextInput
-              mode='outlined'
-              label="Device Brand"
-              value={newDevice.brand}
-              onChangeText={(text) => handleInputChange('brand', text)}
-              style={styles.input}
-              error={!!errorDevice.brand}
-            />
-            {errorDevice.brand ? <Text style={styles.errorText}>{errorDevice.brand}</Text> : null}
-            <TextInput
-              mode='outlined'
-              label="Device Model"
-              value={newDevice.model}
-              onChangeText={(text) => handleInputChange('model', text)}
-              style={styles.input}
-              error={!!errorDevice.model}
-            />
-            {errorDevice.model ? <Text style={styles.errorText}>{errorDevice.model}</Text> : null}
+         
+          
 
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => {
               setAddDeviceVisible(false);
-              setNewDevice({ device_id: '', name: '', brand: '', model: '', created_at: '' });
-              setErrorDevice({ device_id: '', name: '', brand: '', model: '' });
+              setNewDevice({ device_id: '', name: '', created_at: '' });
+              setErrorDevice({ device_id: '', name: '' });
             }}>Cancel</Button>
             <Button onPress={handleAddDevice}>Save Data</Button>
           </Dialog.Actions>
@@ -403,8 +373,8 @@ const Devices = () => {
           visible={updateDeviceVisible}
           onDismiss={() => {
             setUpdateDeviceVisible(false);
-            setUpdatedDevice({ device_id: '', name: '', brand: '', model: '' });
-            setErrorUpdateDevice({ device_id: '', name: '', brand: '', model: '' });
+            setUpdatedDevice({ device_id: '', name: '' });
+            setErrorUpdateDevice({ device_id: '', name: ''});
           }}>
           <Dialog.Title>Update Device Information</Dialog.Title>
           <Dialog.Content>
@@ -426,31 +396,15 @@ const Devices = () => {
               error={!!errorUpdateDevice.name}
             />
             {errorUpdateDevice.name ? <Text style={styles.errorText}>{errorUpdateDevice.name}</Text> : null}
-            <TextInput
-              mode='outlined'
-              label="Device Brand"
-              value={updatedDevice.brand}
-              onChangeText={(text) => handleUpdateChange('brand', text)}
-              style={styles.input}
-              error={!!errorUpdateDevice.brand}
-            />
-            {errorUpdateDevice.brand ? <Text style={styles.errorText}>{errorUpdateDevice.brand}</Text> : null}
-            <TextInput
-              mode='outlined'
-              label="Device Model"
-              value={updatedDevice.model}
-              onChangeText={(text) => handleUpdateChange('model', text)}
-              style={styles.input}
-              error={!!errorUpdateDevice.model}
-            />
-            {errorUpdateDevice.model ? <Text style={styles.errorText}>{errorUpdateDevice.model}</Text> : null}
+         
+        
 
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => {
               setUpdateDeviceVisible(false);
-              setUpdatedDevice({ device_id: '', name: '', brand: '', model: '' });
-              setErrorUpdateDevice({ device_id: '', name: '', brand: '', model: '' });
+              setUpdatedDevice({ device_id: '', name: ''});
+              setErrorUpdateDevice({ device_id: '', name: ''});
             }}>Cancel</Button>
             <Button onPress={handleUpdateDevice}>Update Device</Button>
           </Dialog.Actions>

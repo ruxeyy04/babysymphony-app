@@ -143,13 +143,6 @@ const Home = () => {
               </Text>
             )}
           </Card.Content>
-          {notifications.length > 3 && (
-            <Card.Actions>
-              <Button onPress={() => setIndex(3)} mode="text">
-                View More
-              </Button>
-            </Card.Actions>
-          )}
         </Card>
 
 
@@ -166,7 +159,7 @@ const Home = () => {
               recentChildren.slice(0, 3).map((child, index) => (
                 <List.Item
                   key={index}
-                  title={child.name}
+                  title={child.nickname}
                   description={`Age: ${child.age} Months`}
                   left={(props) => (
                     <Avatar.Icon {...props} icon="baby-face" size={30} color={currentTheme.iconColor} />

@@ -3,9 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Pusher, PusherChannel, PusherEvent } from '@pusher/pusher-websocket-react-native';
 import * as Notifications from 'expo-notifications';
-import { Alert } from 'react-native';
+import { Alert, Vibration } from 'react-native';
 import axios from 'axios';
-
+import { Audio } from 'expo-av';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -30,17 +30,12 @@ type UserInfo = {
 interface Device {
   device_id: string;
   name: string;
-  brand: string;
-  model: string;
   created_at: string;
 }
 
 interface Baby {
   id: string;
-  fname: string;
-  mname: string;
-  lname: string;
-  name: string;
+  nickname: string;
   age: number;
   info: string;
   gender: string;
@@ -198,10 +193,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (response.data.success) {
         const formattedBaby = response.data.data.map((Baby: any) => ({
           id: Baby.id,
-          fname: Baby.fname,
-          mname: Baby.mname,
-          lname: Baby.lname,
-          name: `${Baby.fname} ${Baby.lname}`,
+          nickname: Baby.nickname,
           age: Baby.months,
           info: Baby.gender,
           gender: Baby.gender,
@@ -213,6 +205,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       console.error('Error fetching listBabies:', error);
     }
   };
+
   const setupPusher = async () => {
     const userId = await AsyncStorage.getItem('user_id');
     if (userId) {
@@ -227,12 +220,168 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         await pusher.subscribe({
           channelName: `private-user-channel.${userId}`,
           onEvent: async (event: PusherEvent) => {
-            if (event.eventName === "notification") {
+            if (event.eventName === 'notification') {
               console.log(`Event received: ${event.eventName}`);
-              const parsedData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+              const parsedData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
               console.log(parsedData.title, parsedData.description);
-              if (parsedData.title != "Recording" && parsedData.title != "Stop Recording") {
-                Alert.alert(parsedData.title, parsedData.description)
+
+              if (parsedData.title.includes("sleepy")) {
+                try {
+                  // Load and play the sound
+                  const { sound } = await Audio.Sound.createAsync(
+                    require('../assets/sounds/sleepy_alert.mp3') // Adjust the path if needed
+                  );
+                  await sound.playAsync();
+
+                  // Vibrate in a repeating pattern
+                  Vibration.vibrate([500, 1000, 500], true);
+
+                  Alert.alert(
+                    parsedData.title,
+                    parsedData.description,
+                    [
+                      {
+                        text: 'Acknowledge',
+                        onPress: async () => {
+                          Vibration.cancel(); // Stop vibration when acknowledged
+                          await sound.stopAsync(); // Stop the sound
+                          await sound.unloadAsync(); // Unload the sound from memory
+                        },
+                      },
+                    ],
+                    { cancelable: false } // Prevent dismissing the alert without acknowledgment
+                  );
+                  
+                } catch (error) {
+                  console.error('Error playing sound:', error);
+                }
+              }
+              if (parsedData.title.includes("burping")) {
+                try {
+                  // Load and play the sound
+                  const { sound } = await Audio.Sound.createAsync(
+                    require('../assets/sounds/burp_alert.mp3') // Adjust the path if needed
+                  );
+                  await sound.playAsync();
+
+                  // Vibrate in a repeating pattern
+                  Vibration.vibrate([500, 1000, 500], true);
+
+                  Alert.alert(
+                    parsedData.title,
+                    parsedData.description,
+                    [
+                      {
+                        text: 'Acknowledge',
+                        onPress: async () => {
+                          Vibration.cancel(); // Stop vibration when acknowledged
+                          await sound.stopAsync(); // Stop the sound
+                          await sound.unloadAsync(); // Unload the sound from memory
+                        },
+                      },
+                    ],
+                    { cancelable: false } // Prevent dismissing the alert without acknowledgment
+                  );
+                  
+                } catch (error) {
+                  console.error('Error playing sound:', error);
+                }
+              }
+              if (parsedData.title.includes("uncomfortable")) {
+                try {
+                  // Load and play the sound
+                  const { sound } = await Audio.Sound.createAsync(
+                    require('../assets/sounds/discomfort_alert.mp3') // Adjust the path if needed
+                  );
+                  await sound.playAsync();
+
+                  // Vibrate in a repeating pattern
+                  Vibration.vibrate([500, 1000, 500], true);
+
+                  Alert.alert(
+                    parsedData.title,
+                    parsedData.description,
+                    [
+                      {
+                        text: 'Acknowledge',
+                        onPress: async () => {
+                          Vibration.cancel(); // Stop vibration when acknowledged
+                          await sound.stopAsync(); // Stop the sound
+                          await sound.unloadAsync(); // Unload the sound from memory
+                        },
+                      },
+                    ],
+                    { cancelable: false } // Prevent dismissing the alert without acknowledgment
+                  );
+                  
+                } catch (error) {
+                  console.error('Error playing sound:', error);
+                }
+              }
+              if (parsedData.title.includes("gas")) {
+                try {
+                  // Load and play the sound
+                  const { sound } = await Audio.Sound.createAsync(
+                    require('../assets/sounds/lower_gas_alert.mp3') // Adjust the path if needed
+                  );
+                  await sound.playAsync();
+
+                  // Vibrate in a repeating pattern
+                  Vibration.vibrate([500, 1000, 500], true);
+
+                  Alert.alert(
+                    parsedData.title,
+                    parsedData.description,
+                    [
+                      {
+                        text: 'Acknowledge',
+                        onPress: async () => {
+                          Vibration.cancel(); // Stop vibration when acknowledged
+                          await sound.stopAsync(); // Stop the sound
+                          await sound.unloadAsync(); // Unload the sound from memory
+                        },
+                      },
+                    ],
+                    { cancelable: false } // Prevent dismissing the alert without acknowledgment
+                  );
+                  
+                } catch (error) {
+                  console.error('Error playing sound:', error);
+                }
+              }
+              if (parsedData.title.includes("hungry")) {
+                try {
+                  // Load and play the sound
+                  const { sound } = await Audio.Sound.createAsync(
+                    require('../assets/sounds/hungry_alert.mp3') // Adjust the path if needed
+                  );
+                  await sound.playAsync();
+
+                  // Vibrate in a repeating pattern
+                  Vibration.vibrate([500, 1000, 500], true);
+
+                  Alert.alert(
+                    parsedData.title,
+                    parsedData.description,
+                    [
+                      {
+                        text: 'Acknowledge',
+                        onPress: async () => {
+                          Vibration.cancel(); // Stop vibration when acknowledged
+                          await sound.stopAsync(); // Stop the sound
+                          await sound.unloadAsync(); // Unload the sound from memory
+                        },
+                      },
+                    ],
+                    { cancelable: false } // Prevent dismissing the alert without acknowledgment
+                  );
+                  
+                } catch (error) {
+                  console.error('Error playing sound:', error);
+                }
+              }
+              // Regular Notifications
+              if (parsedData.title !== 'Recording' && parsedData.title !== 'Stop Recording') {
                 setBooleanNotif(true);
                 const newNotification = {
                   id: parsedData.inserted_id,
@@ -254,7 +403,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
       fetchDevice(userId);
       fetchBaby(userId);
-      loadNotifications()
+      loadNotifications();
     }
   };
 

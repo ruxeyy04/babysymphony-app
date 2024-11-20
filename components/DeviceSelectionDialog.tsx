@@ -8,8 +8,6 @@ import { useTheme } from '@/hooks/useAppTheme';
 interface Device {
     id: string;
     name: string;
-    brand: string;
-    model: string;
 }
 
 interface DeviceSelectionDialogProps {
@@ -113,7 +111,7 @@ const DeviceSelectionDialog: React.FC<DeviceSelectionDialogProps> = ({ visible, 
                                 renderItem={({ item }) => (
                                     <View style={styles.deviceItem}>
                                         <RadioButton.Item
-                                            label={`${item.name} (${item.brand}, ${item.model})`}
+                                            label={`${item.name}`}
                                             value={item.id}
                                             labelStyle={{ color: currentTheme.textColor }}
                                         />

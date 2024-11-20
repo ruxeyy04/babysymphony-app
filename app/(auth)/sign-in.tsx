@@ -231,11 +231,11 @@ const SignIn = () => {
           </View>
 
           <FormField
-            title="Email or Username"
+            title="Username"
             value={form.email}
             handleChangeText={handleEmailChange}
             otherStyles="mt-7"
-            placeholder="Email/Username"
+            placeholder="Username"
             error={errors.email}
           />
 

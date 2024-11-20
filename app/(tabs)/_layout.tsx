@@ -60,13 +60,13 @@ const BottomNavigationExample = () => {
       focusedIcon: 'devices',
       unfocusedIcon: 'devices'
     },
-    {
-      key: 'notif',
-      title: 'Alert',
-      focusedIcon: 'bell',
-      unfocusedIcon: 'bell-outline',
-      badge: false
-    },
+    // {
+    //   key: 'notif',
+    //   title: 'Alert',
+    //   focusedIcon: 'bell',
+    //   unfocusedIcon: 'bell-outline',
+    //   badge: false
+    // },
     {
       key: 'profile',
       title: 'Profile',
@@ -120,7 +120,6 @@ const BottomNavigationExample = () => {
               renderScene={BottomNavigation.SceneMap({
                 home: Home,
                 child: Child,
-                notif: Notif,
                 profile: Profile,
                 device: Devices
               })}

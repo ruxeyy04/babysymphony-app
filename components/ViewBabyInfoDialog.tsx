@@ -144,15 +144,8 @@ const ViewChildInfoDialog: React.FC<Baby> = ({ visible, childId, onClose }) => {
                 ) : childInfo ? (
                     <View>
                         <View style={styles.childContainer}>
-                            <Text style={styles.label}>First Name:</Text>
-                            <Text style={styles.childValue}>{childInfo.baby.fname}</Text>
-
-                            <Text style={styles.label}>Middle Name:</Text>
-                            <Text style={styles.childValue}>{childInfo.baby.mname}</Text>
-
-                            <Text style={styles.label}>Last Name:</Text>
-                            <Text style={styles.childValue}>{childInfo.baby.lname}</Text>
-
+                            <Text style={styles.label}>Nickname:</Text>
+                            <Text style={styles.childValue}>{childInfo.baby.nickname}</Text>
                             <Text style={styles.label}>Gender:</Text>
                             <Text style={styles.childValue}>{childInfo.baby.gender}</Text>
 
@@ -168,7 +161,7 @@ const ViewChildInfoDialog: React.FC<Baby> = ({ visible, childId, onClose }) => {
 
                         {childInfo.device && childInfo.device.id != null ? (
                             <View style={styles.childContainer}>
-                                <Paragraph style={styles.childName}>{childInfo.device.name} | {childInfo.device.brand} |  {childInfo.device.model}</Paragraph>
+                                <Paragraph style={styles.childName}>{childInfo.device.name}</Paragraph>
                                 <Paragraph style={styles.childDescription}>Device ID: {childInfo.device.id}</Paragraph>
                             </View>
                         ) : (
