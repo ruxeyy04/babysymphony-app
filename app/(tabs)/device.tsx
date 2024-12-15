@@ -1,10 +1,11 @@
+import ShareDeviceSelectionDialog from '@/components/ShareDeviceSelectionDialog';
 import ViewDeviceInfoDialog from '@/components/ViewDeviceInfoDialog';
 import { useUserContext } from '@/context/UserContext';
 import { useTheme } from '@/hooks/useAppTheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, useColorScheme, Alert } from 'react-native';
+import { View, StyleSheet, FlatList, useColorScheme, Alert, RefreshControl } from 'react-native';
 import { Avatar, Button, Card, FAB, Modal, PaperProvider, Paragraph, TextInput, Menu, Divider, Searchbar, Text, Dialog, Portal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,11 +13,16 @@ interface DeviceInfo {
   device_id: string;
   name: string;
   created_at: string;
+  is_shared: any;
+  is_shared_with_others: any;
 }
 interface Devices {
   device_id: string;
   name: string;
   created_at: string;
+  is_shared: any;
+  is_shared_with_others: any;
+
 }
 const themes = {
   light: {
@@ -49,6 +55,7 @@ const Devices = () => {
   const [addDeviceVisible, setAddDeviceVisible] = useState<boolean>(false);
   const [viewDeviceVisible, setViewDeviceVisible] = useState<boolean>(false);
   const [updateDeviceVisible, setUpdateDeviceVisible] = useState<boolean>(false);
+  const [shareDeviceVisible, setShareDeviceVisible] = useState<boolean>(false);
   const [deviceOptionsVisible, setDeviceOptionsVisible] = useState<string | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -84,15 +91,18 @@ const Devices = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
-  const fetchDevice = async (userId: string) => {
+  const fetchDevice = async (userId: any) => {
+
     try {
       const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/get?userid=${userId}`);
       if (response.data.success) {
+
         const devices = response.data.data.map((device: any) => ({
-          device_id: device.id, name: device.name, created_at: device.created_at
+          device_id: device.id, name: device.name, created_at: device.created_at, is_shared: device.is_shared, is_shared_with_others: device.is_shared_with_others
         }));
         setDevices(devices);
       }
+
     } catch (error) {
       console.error('Error fetching devices:', error);
     }
@@ -126,6 +136,14 @@ const Devices = () => {
           setUpdatedDevice(selectedDevice)
         }
         break;
+      case 'share':
+        console.log(`Share device ID: ${deviceId}`);
+        if (selectedDevice) {
+          setSelectedDevice(selectedDevice);
+          setShareDeviceVisible(true);
+          setShareDevice(selectedDevice)
+        }
+        break;
       case 'delete':
         if (selectedDevice) {
           setSelectedDevice(selectedDevice);
@@ -140,7 +158,7 @@ const Devices = () => {
   };
 
   const handleAddDevice = async () => {
-    setErrorDevice({ device_id: '', name: ''});
+    setErrorDevice({ device_id: '', name: '' });
 
     let valid = true;
     if (!newDevice.device_id) {
@@ -163,7 +181,7 @@ const Devices = () => {
 
         if (response.data.success) {
           Alert.alert('Success', response.data.message)
-          setNewDevice({ device_id: '', name: '', created_at: '' });
+          setNewDevice({ device_id: '', name: '', created_at: '', is_shared: '', is_shared_with_others: '' });
           setAddDeviceVisible(false)
           setDevices((prevDevices) => [...prevDevices, newDevice]);
           loadDevices(userId as string)
@@ -240,9 +258,10 @@ const Devices = () => {
       device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       device.device_id.includes(searchQuery)
   );
-  const [newDevice, setNewDevice] = useState({ device_id: '', name: '', created_at: '' });
+  const [newDevice, setNewDevice] = useState({ device_id: '', name: '', created_at: '', is_shared: '', is_shared_with_others: '' });
   const [errorDevice, setErrorDevice] = useState({ device_id: '', name: '' });
   const [updatedDevice, setUpdatedDevice] = useState({ device_id: '', name: '' });
+  const [shareDevice, setShareDevice] = useState({ device_id: '' });
   const [errorUpdateDevice, setErrorUpdateDevice] = useState({ device_id: '', name: '' });
   const handleInputChange = (field: keyof DeviceInfo, value: string) => {
     setNewDevice(prevState => ({
@@ -269,6 +288,12 @@ const Devices = () => {
       [field]: '',
     }));
   };
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchDevice(userId); // Replace with actual userId
+    setRefreshing(false);
+  };
   return (
 
     <SafeAreaView style={[{ flex: 1, padding: 16 }, { backgroundColor: currentTheme.background }]}>
@@ -278,45 +303,62 @@ const Devices = () => {
         value={searchQuery}
         style={{ marginBottom: 16 }}
       />
-    {filteredDevices.length === 0 ? (
-      <Text style={{ textAlign: 'center', marginTop: 20 }}>No Device found.</Text>
-    ) : (
-      <FlatList
-        data={filteredDevices}
-        keyExtractor={(item) => item.device_id}
-        renderItem={({ item }) => (
-          <View key={item.device_id} style={{ marginBottom: 8 }}>
-            <Card
-              style={styles.card}
-              onPress={(event) =>
-                handleMenuOpen(item.device_id, { x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })
-              }
-            >
-              <Card.Title
-                title={`Device ID: ${item.device_id}`}
-                subtitle={`${item.name} | ${item.created_at}`}
-                left={(props) => <Avatar.Icon {...props} icon="chip" />}
-              />
-              <Card.Content>
-                <Text>Tap for options</Text>
-              </Card.Content>
-            </Card>
-
-            {/* Options Menu */}
-            <Menu
-              visible={deviceOptionsVisible === item.device_id}
-              onDismiss={handleMenuClose}
-              anchor={{ x: menuAnchor?.x ?? 0, y: menuAnchor?.y ?? 0 }}
-            >
-              <Menu.Item onPress={() => handleMenuAction('view', item.device_id)} title="View" />
-              <Menu.Item onPress={() => handleMenuAction('update', item.device_id)} title="Update" />
-              <Divider />
-              <Menu.Item onPress={() => handleMenuAction('delete', item.device_id)} title="Delete" />
-            </Menu>
-          </View>
-        )}
+      <ShareDeviceSelectionDialog
+        visible={shareDeviceVisible}
+        onClose={() => setShareDeviceVisible(false)}
+        userId={userId}
+        deviceId={selectedDevice?.device_id}
+        fetchDevice={fetchDevice}
       />
-    )}
+      {filteredDevices.length === 0 ? (
+        <Text style={{ textAlign: 'center', marginTop: 20 }}>No Device found.</Text>
+      ) : (
+        <FlatList
+          data={filteredDevices}
+          keyExtractor={(item) => item.device_id}
+          renderItem={({ item }) => (
+            <View key={item.device_id} style={{ marginBottom: 8 }}>
+              <Card
+                style={styles.card}
+                onPress={(event) =>
+                  handleMenuOpen(item.device_id, { x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })
+                }
+              >
+                <Card.Title
+                  title={`Device ID: ${item.device_id}`}
+                  subtitle={`${item.name} | ${item.created_at}`}
+                  left={(props) => <Avatar.Icon {...props} icon="chip" />}
+                />
+                <Card.Content>
+                  <Text>Tap for options</Text>
+                </Card.Content>
+              </Card>
+
+              {/* Options Menu */}
+              <Menu
+                visible={deviceOptionsVisible === item.device_id}
+                onDismiss={handleMenuClose}
+                anchor={{ x: menuAnchor?.x ?? 0, y: menuAnchor?.y ?? 0 }}
+              >
+                <Menu.Item onPress={() => handleMenuAction('view', item.device_id)} title="View" />
+                <Menu.Item onPress={() => handleMenuAction('update', item.device_id)} title="Update" />
+                <Menu.Item onPress={() => handleMenuAction('share', item.device_id)} title="Share Device" />
+
+                {/* Conditionally render Edit Sharing option */}
+                {item.is_shared_with_others === 1 && (
+                  <Menu.Item onPress={() => handleMenuAction('edit_sharing', item.device_id)} title="Edit Sharing" />
+                )}
+
+                <Divider />
+                <Menu.Item onPress={() => handleMenuAction('delete', item.device_id)} title="Delete" />
+              </Menu>
+            </View>
+          )}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )}
 
       {/* View Device Information */}
       <ViewDeviceInfoDialog visible={viewDeviceVisible} childId={selectedDevice?.device_id} onClose={() => setViewDeviceVisible(false)} />
@@ -327,8 +369,8 @@ const Devices = () => {
           visible={addDeviceVisible}
           onDismiss={() => {
             setAddDeviceVisible(false);
-            setNewDevice({ device_id: '', name: '', created_at: '' });
-            setErrorDevice({ device_id: '', name: ''});
+            setNewDevice({ device_id: '', name: '', created_at: '', is_shared: '', is_shared_with_others: '' });
+            setErrorDevice({ device_id: '', name: '' });
           }}>
           <Dialog.Title>Add Device Information</Dialog.Title>
           <Dialog.Content>
@@ -350,14 +392,14 @@ const Devices = () => {
               error={!!errorDevice.name}
             />
             {errorDevice.name ? <Text style={styles.errorText}>{errorDevice.name}</Text> : null}
-         
-          
+
+
 
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => {
               setAddDeviceVisible(false);
-              setNewDevice({ device_id: '', name: '', created_at: '' });
+              setNewDevice({ device_id: '', name: '', created_at: '', is_shared: '', is_shared_with_others: '' });
               setErrorDevice({ device_id: '', name: '' });
             }}>Cancel</Button>
             <Button onPress={handleAddDevice}>Save Data</Button>
@@ -374,7 +416,7 @@ const Devices = () => {
           onDismiss={() => {
             setUpdateDeviceVisible(false);
             setUpdatedDevice({ device_id: '', name: '' });
-            setErrorUpdateDevice({ device_id: '', name: ''});
+            setErrorUpdateDevice({ device_id: '', name: '' });
           }}>
           <Dialog.Title>Update Device Information</Dialog.Title>
           <Dialog.Content>
@@ -396,15 +438,15 @@ const Devices = () => {
               error={!!errorUpdateDevice.name}
             />
             {errorUpdateDevice.name ? <Text style={styles.errorText}>{errorUpdateDevice.name}</Text> : null}
-         
-        
+
+
 
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => {
               setUpdateDeviceVisible(false);
-              setUpdatedDevice({ device_id: '', name: ''});
-              setErrorUpdateDevice({ device_id: '', name: ''});
+              setUpdatedDevice({ device_id: '', name: '' });
+              setErrorUpdateDevice({ device_id: '', name: '' });
             }}>Cancel</Button>
             <Button onPress={handleUpdateDevice}>Update Device</Button>
           </Dialog.Actions>

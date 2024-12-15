@@ -60,13 +60,13 @@ const BottomNavigationExample = () => {
       focusedIcon: 'devices',
       unfocusedIcon: 'devices'
     },
-    // {
-    //   key: 'notif',
-    //   title: 'Alert',
-    //   focusedIcon: 'bell',
-    //   unfocusedIcon: 'bell-outline',
-    //   badge: false
-    // },
+    {
+      key: 'notif',
+      title: 'Alert',
+      focusedIcon: 'bell',
+      unfocusedIcon: 'bell-outline',
+      badge: false
+    },
     {
       key: 'profile',
       title: 'Profile',
@@ -121,7 +121,8 @@ const BottomNavigationExample = () => {
                 home: Home,
                 child: Child,
                 profile: Profile,
-                device: Devices
+                device: Devices,
+                notif:Notif
               })}
               sceneAnimationEnabled={"opacity" !== undefined}
               sceneAnimationType='opacity'
