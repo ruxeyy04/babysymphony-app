@@ -68,12 +68,13 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
         // Filter users based on the search query
         const lowerCaseQuery = searchQuery.toLowerCase();
         const filtered = users.filter(user =>
-            user.fname.toLowerCase().includes(lowerCaseQuery) ||
-            user.lname.toLowerCase().includes(lowerCaseQuery) ||
-            user.username.toLowerCase().includes(lowerCaseQuery)
+            (user.fname?.toLowerCase() || '').includes(lowerCaseQuery) ||
+            (user.lname?.toLowerCase() || '').includes(lowerCaseQuery) ||
+            (user.username?.toLowerCase() || '').includes(lowerCaseQuery)
         );
         setFilteredUsers(filtered);
     }, [searchQuery, users]);
+    
 
     const fetchUsers = async () => {
         try {

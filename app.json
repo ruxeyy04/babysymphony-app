@@ -2,7 +2,7 @@
   "expo": {
     "name": "MAide: Baby Symphony",
     "slug": "babysymphony",
-    "version": "1.0.6",
+    "version": "2.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/lullaby-icon.png",
     "scheme": "babysymphony",

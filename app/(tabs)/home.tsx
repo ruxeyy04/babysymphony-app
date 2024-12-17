@@ -124,7 +124,7 @@ const Home = () => {
                 <List.Item
                   key={index}
                   title={notif.title}
-                  description={notif.description}
+                  description={notif.acknowledge_by == null ? 'Not Yet Acknowledge' : `Acknowledged by: ${notif.acknowledge_by}`}
                   left={(props) => (
                     <Avatar.Icon {...props} icon="alert-circle" size={24} color={currentTheme.iconColor} />
                   )}

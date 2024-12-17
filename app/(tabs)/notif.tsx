@@ -132,7 +132,7 @@ const Notif = () => {
               <Card.Content>
                 <Text style={styles.title}>{item.description}</Text>
                 <Text style={styles.date}>
-                  {item.acknowledge_by == null ? 'Not Yet Acknowledged' : `Acknowledged by: ${item.acknowledge_by}`} | {item.created_at}
+                  {item.acknowledge_by == null ? 'Not Yet Acknowledge' : `Acknowledged by: ${item.acknowledge_by}`} | {item.created_at}
                 </Text>
               </Card.Content>
               <Card.Actions style={styles.actions}>

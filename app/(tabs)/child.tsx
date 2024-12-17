@@ -41,10 +41,13 @@ interface ChildInfo {
 }
 const Child = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedEditDate, setSelectedEditDate] = useState<Date | undefined>(undefined);
   const [ageInMonths, setAgeInMonths] = useState<number>(0);
+  const [ageEditInMonths, setAgeEditInMonths] = useState<number>(0);
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const currentDate = new Date();
   const calculateAgeInMonths = (birthDate: Date): number => {
-    const currentDate = new Date();
+
     const birth = new Date(birthDate);
 
     let ageInMonths = currentDate.getMonth() - birth.getMonth();
@@ -63,12 +66,31 @@ const Child = () => {
   const onDateChange = (event: any, selectedDate: Date | undefined) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      setSelectedDate(selectedDate);
-      const age = calculateAgeInMonths(selectedDate);
+      // Strip the time component and adjust for local time zone
+      const dateOnly = new Date(selectedDate);
+      dateOnly.setHours(0, 0, 0, 0); // Remove the time
+
+      console.log(dateOnly.toISOString().split('T')[0]); // Logs only the date in YYYY-MM-DD format
+      setSelectedDate(dateOnly);
+
+      const age = calculateAgeInMonths(dateOnly);
       setAgeInMonths(age);
     }
   };
+  const onUpdateDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      // Strip the time component and adjust for local time zone
+      const dateOnly = new Date(selectedDate);
+      dateOnly.setHours(0, 0, 0, 0); // Remove the time
 
+      console.log(dateOnly.toISOString().split('T')[0]); // Logs only the date in YYYY-MM-DD format
+      setSelectedEditDate(dateOnly);
+
+      const age = calculateAgeInMonths(dateOnly);
+      setAgeEditInMonths(age);
+    }
+  };
   const { fetchBaby } = useUserContext()
   const [userId, setUserId] = useState<string | null>(null);
   const [visibleDelete, setDeleteVisible] = useState(false);
@@ -163,7 +185,7 @@ const Child = () => {
         break;
       case 'update':
         if (child) {
-          console.log(child)
+          fetchChildData(child.id);
           setSelectedChild(child);
           setUpdatedChild(child as any);
           setVisibleUpdate(true);
@@ -194,6 +216,26 @@ const Child = () => {
     }
     handleMenuClose();
   };
+  // Function to fetch child data and update the birthdate
+  const fetchChildData = async (childId: number) => {
+    try {
+      const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/baby/getspecific?id=${childId}`);
+      if (response.data && response.data.data && response.data.data.baby) {
+        const birthdate = new Date(response.data.data.baby.birthdate)
+        const babyAgeMonths = response.data.data.baby.months
+        if (birthdate) {
+          // Store the birthdate
+          console.log('Fetched Birthdate:', birthdate);
+          setSelectedEditDate(birthdate); // Set the fetched birthdate
+          setAgeEditInMonths(babyAgeMonths)
+        }
+      } else {
+        console.error('Error: Baby data not found in response');
+      }
+    } catch (error) {
+      console.error('Error fetching child data:', error);
+    }
+  };
   const handleDeleteBaby = async () => {
     if (selectedChild) {
       try {
@@ -222,18 +264,14 @@ const Child = () => {
         const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/update', {
           id: selectedChild.id,
           nickname: updatedChild.nickname,
-          age: updatedChild.age,
+          age: ageEditInMonths,
+          birthdate: selectedEditDate,
           gender: updatedChild.gender,
           userid: userId,
         });
 
         if (response.data.success) {
-          // Handle success
-          setChildren((prevChildren: any) =>
-            prevChildren.map((child: any) =>
-              child.id === selectedChild.id ? { ...child, ...updatedChild } : child
-            )
-          );
+          await fetchChildren(`${userId}`);
           fetchBaby(userId as string)
           setVisibleUpdate(false);
           setSelectedChild(null);
@@ -287,8 +325,8 @@ const Child = () => {
       setErrorChild((prev) => ({ ...prev, gender: 'Gender is required.' }));
       valid = false;
     }
-    const ageNumber = parseInt(newChild.age, 10);
-
+    const ageNumber = ageInMonths;
+    console.log(ageNumber)
     if (isNaN(ageNumber) || ageNumber <= -1 || ageNumber > 8) {
       setErrorChild((prev) => ({ ...prev, age: 'Age must be between 0 and 8 months.' }));
       valid = false;
@@ -299,8 +337,9 @@ const Child = () => {
         const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/add', {
           nickname: newChild.nickname,
           gender: newChild.gender,
-          months: newChild.age,
+          months: ageInMonths,
           userid: userId,
+          birthdate: selectedDate
         });
 
         if (response.data.success) {
@@ -478,6 +517,8 @@ const Child = () => {
             setAddChildVisible(false);
             setNewChild({ nickname: '', age: '', gender: '' });
             setErrorChild({ nickname: '', age: '', gender: '' });
+            setSelectedDate(new Date())
+            setAgeInMonths(0)
           }}
         >
           <Dialog.Title>Add Baby Information</Dialog.Title>
@@ -532,6 +573,8 @@ const Child = () => {
               setAddChildVisible(false);
               setNewChild({ nickname: '', age: '', gender: '' });
               setErrorChild({ nickname: '', age: '', gender: '' });
+              setSelectedDate(new Date())
+              setAgeInMonths(0)
             }}>Cancel</Button>
             <Button onPress={handleAddChild}>Save Data</Button>
           </Dialog.Actions>
@@ -563,14 +606,26 @@ const Child = () => {
             <TextInput
               mode='outlined'
               label="Age (0 - 8 Months)"
-              value={String(updatedChild.age || '')}
+              value={String(ageEditInMonths || '')}
               onChangeText={(text) => handleUpdateInputChange('age', text)}
               style={styles.input}
               keyboardType="numeric"
               error={!!errorUpdateChild.age}
             />
             {errorUpdateChild.age ? <Text style={styles.errorText}>{errorUpdateChild.age}</Text> : null}
-
+            <Button mode="contained" onPress={showDatepicker} style={styles.buttonDatePicker}>
+              Select Birthdate
+            </Button>
+            {showDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={selectedEditDate || new Date()}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={onUpdateDateChange}
+              />
+            )}
             <Dropdown
               mode="outlined"
               label="Gender"
