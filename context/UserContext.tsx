@@ -45,9 +45,15 @@ interface Baby {
 type Notification = {
   id: number;
   title: string;
+  notif_owner: any;
   description: string;
-  acknowledge: number;
+  is_shared: string;
   created_at: string;
+  acknowledge: number;
+  acknowledge_by: string | null;
+  note_status: string | null;
+  note: string | null;
+  shared_by: number[];
 };
 
 const UserContext = createContext<{
@@ -64,7 +70,7 @@ const UserContext = createContext<{
   setupPusher: () => void;
   fetchUserProfile: () => void;
   loadNotifications: () => void;
-  acknowledgeNotification: (id: number) => Promise<void>;
+  acknowledgeNotification: (id: number, userid: any) => Promise<void>;
   deleteNotif: (id: number) => Promise<void>;
 } | undefined>(undefined);
 
@@ -380,15 +386,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                   console.error('Error playing sound:', error);
                 }
               }
+              console.log(parsedData.shared_by)
               // Regular Notifications
               if (parsedData.title !== 'Recording' && parsedData.title !== 'Stop Recording') {
                 setBooleanNotif(true);
                 const newNotification = {
                   id: parsedData.inserted_id,
+                  notif_owner: parsedData.userid,
                   title: parsedData.title,
                   description: parsedData.description,
                   acknowledge: 0,
+                  is_shared: parsedData.is_shared,
                   created_at: formatDate(new Date().toISOString()),
+                  acknowledge_by: null,
+                  note_status: parsedData.note_status, // Allow null here
+                  note: parsedData.note,
+                  shared_by: parsedData.shared_by
                 };
                 setNotifications((prev) => [newNotification, ...prev]);
                 sendNotification(newNotification.title, newNotification.description);
@@ -417,15 +430,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const acknowledgeNotification = async (id: number) => {
+  const acknowledgeNotification = async (id: number, userid: string) => {
     try {
       await axios.post(`https://maide-deeplearning.bsit-ln.com/api/notif/acknowledge`, {
-        id: id
+        id: id,
+        userid: userid
       });
-      setNotifications((prev) =>
-        prev.map((notif) => (notif.id === id ? { ...notif, acknowledge: 1 } : notif))
-      );
-      setBooleanNotif(false); // Set booleanNotif back to false once a notification is acknowledged
+      loadNotifications()
     } catch (error) {
       console.error('Failed to acknowledge notification:', error);
     }

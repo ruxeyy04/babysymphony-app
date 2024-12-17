@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Portal, Dialog, Button, RadioButton, Paragraph, TextInput } from 'react-native-paper';
+import { Portal, Dialog, Button, Checkbox, Paragraph, TextInput } from 'react-native-paper';
 import axios from 'axios';
 import { Alert, FlatList, StyleSheet, View, useColorScheme, Dimensions } from 'react-native';
 import { useTheme } from '@/hooks/useAppTheme';
@@ -11,7 +11,7 @@ interface User {
     username: string;
 }
 
-interface ShareDeviceSelectionDialogProps {
+interface EditDeviceSelectionDialogProps {
     visible: boolean;
     onClose: () => void;
     userId: any;
@@ -34,7 +34,7 @@ const themes = {
     },
 };
 
-const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
+const EditDeviceSelectionDialog: React.FC<EditDeviceSelectionDialogProps> = ({
     visible,
     onClose,
     userId,
@@ -44,7 +44,7 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [selectedUserId, setSelectedUserId] = useState<string>('');
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const { theme } = useTheme();
     const deviceColorScheme = useColorScheme();
     const currentTheme = theme === "system_default"
@@ -60,7 +60,7 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
             fetchUsers();
         } else {
             setSearchQuery('');
-            setSelectedUserId('');
+            setSelectedUserIds([]);
         }
     }, [visible]);
 
@@ -77,13 +77,10 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/getsharelistuserexept?userid=${userId}&device_id=${deviceId}`);
-            if (response.data && response.data.users) {
-                setUsers(response.data.users);
-                setFilteredUsers(response.data.users);
-                if (response.data.users.length > 0) {
-                    setSelectedUserId(response.data.users[0].id); // Automatically select the first user.
-                }
+            const response = await axios.get(`https://maide-deeplearning.bsit-ln.com/api/device/getsharedevice?deviceid=${deviceId}`);
+            if (response.data && response.data.message) {
+                setUsers(response.data.message);
+                setFilteredUsers(response.data.message);
             } else {
                 setUsers([]);
                 setFilteredUsers([]);
@@ -94,45 +91,47 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
         }
     };
 
+    const handleCheckboxChange = (userId: string) => {
+        setSelectedUserIds((prevSelectedUserIds) =>
+            prevSelectedUserIds.includes(userId)
+                ? prevSelectedUserIds.filter(id => id !== userId) // Uncheck
+                : [...prevSelectedUserIds, userId] // Check
+        );
+    };
+
     const handleSave = async () => {
-        if (!selectedUserId) return;
+        if (selectedUserIds.length === 0) {
+            Alert.alert('Error', 'Please select at least one user to remove.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('deviceid', deviceId);
+        selectedUserIds.forEach(userId => formData.append('users[]', userId));
 
         try {
-            const formData = new URLSearchParams();
-            formData.append('userid', selectedUserId);
-            formData.append('deviceid', deviceId);
-            formData.append('shared_by', userId);
-
-            console.log('Payload:', { selectedUserId, deviceId, userId });
             const response = await axios.post(
-                'https://maide-deeplearning.bsit-ln.com/api/device/savesharedevice',
-                formData.toString(),
-                {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                }
+                'https://maide-deeplearning.bsit-ln.com/api/device/removesharedusers',
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
             );
-
-            console.log('API Response:', response.data);
-
-            if (response.status === 200) {
-                Alert.alert('Success', 'Device shared successfully!');
-                fetchDevice(userId);
-                onClose();
+            if (response.data.success) {
+                Alert.alert('Success', 'Users removed successfully.');
+                fetchDevice(userId); // Refresh device data
+                onClose(); // Close dialog
             } else {
-                Alert.alert('Error', 'Failed to save the device. Please try again.');
+                Alert.alert('Error', response.data.message || 'Failed to remove users.');
             }
         } catch (error) {
-            console.error('API Error:', error);
-            Alert.alert('Error', 'Failed to save the device. Please try again.');
+            Alert.alert('Error', 'Failed to remove users. Please try again later.');
+            console.error(error);
         }
     };
 
     return (
         <Portal>
             <Dialog visible={visible} onDismiss={onClose}>
-                <Dialog.Title>Select a User</Dialog.Title>
+                <Dialog.Title>Remove Users</Dialog.Title>
                 <Dialog.Content style={styles.dialogContent}>
                     <TextInput
                         mode="outlined"
@@ -142,28 +141,34 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
                         style={styles.searchBar}
                     />
                     {filteredUsers.length > 0 ? (
-                        <RadioButton.Group onValueChange={(value) => setSelectedUserId(value)} value={selectedUserId}>
-                            <FlatList
-                                data={filteredUsers}
-                                keyExtractor={(item) => item.id.toString()}
-                                renderItem={({ item }) => (
-                                    <View style={styles.userItem}>
-                                        <RadioButton.Item
-                                            label={`${item.fname} ${item.lname}`}
-                                            value={item.id}
-                                            labelStyle={{ color: currentTheme.textColor }}
-                                        />
-                                    </View>
-                                )}
-                            />
-                        </RadioButton.Group>
+                        <FlatList
+                            data={filteredUsers}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <View style={styles.userItem}>
+                                    <Checkbox
+                                        status={selectedUserIds.includes(item.id) ? 'checked' : 'unchecked'}
+                                        onPress={() => handleCheckboxChange(item.id)}
+                                        color={currentTheme.textColor}
+                                    />
+                                    <Paragraph style={{ color: currentTheme.textColor, marginLeft: 8 }}>
+                                        {`${item.fname} ${item.lname}`}
+                                    </Paragraph>
+                                </View>
+                            )}
+                        />
                     ) : (
                         <Paragraph style={{ color: currentTheme.textColor }}>No users available</Paragraph>
                     )}
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={onClose} style={styles.actionButton}>Close</Button>
-                    <Button mode="contained" onPress={handleSave} disabled={!selectedUserId} style={styles.actionButton}>
+                    <Button
+                        mode="contained"
+                        onPress={handleSave}
+                        disabled={selectedUserIds.length === 0}
+                        style={styles.actionButton}
+                    >
                         Save
                     </Button>
                 </Dialog.Actions>
@@ -171,7 +176,6 @@ const ShareDeviceSelectionDialog: React.FC<ShareDeviceSelectionDialogProps> = ({
         </Portal>
     );
 };
-
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -184,6 +188,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     userItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 10,
     },
     actionButton: {
@@ -191,5 +197,4 @@ const styles = StyleSheet.create({
     },
 });
 
-
-export default ShareDeviceSelectionDialog;
+export default EditDeviceSelectionDialog;

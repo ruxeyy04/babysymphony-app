@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, useColorScheme, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, useColorScheme, ScrollView, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Searchbar, Card, FAB, Portal, Menu, TouchableRipple, Divider, Modal, Button, TextInput, Provider as PaperProvider, Avatar, Text, Dialog } from 'react-native-paper';
 import { useTheme } from '@/hooks/useAppTheme';
@@ -9,7 +9,7 @@ import axios from 'axios';
 import ViewChildInfoDialog from "@/components/ViewBabyInfoDialog";
 import DeviceSelectionDialog from '@/components/DeviceSelectionDialog';
 import { useUserContext } from '@/context/UserContext';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 const themes = {
   light: {
     background: "#EFF8FF",
@@ -40,7 +40,36 @@ interface ChildInfo {
   gender: string;
 }
 const Child = () => {
-  const {fetchBaby} = useUserContext()
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [ageInMonths, setAgeInMonths] = useState<number>(0);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const calculateAgeInMonths = (birthDate: Date): number => {
+    const currentDate = new Date();
+    const birth = new Date(birthDate);
+
+    let ageInMonths = currentDate.getMonth() - birth.getMonth();
+    const yearsDifference = currentDate.getFullYear() - birth.getFullYear();
+
+    if (ageInMonths < 0) {
+      ageInMonths += 12;
+    }
+    ageInMonths += yearsDifference * 12;
+    return ageInMonths;
+  };
+  const showDatepicker = () => {
+    setShowDatePicker(true);
+  };
+
+  const onDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setSelectedDate(selectedDate);
+      const age = calculateAgeInMonths(selectedDate);
+      setAgeInMonths(age);
+    }
+  };
+
+  const { fetchBaby } = useUserContext()
   const [userId, setUserId] = useState<string | null>(null);
   const [visibleDelete, setDeleteVisible] = useState(false);
   const [removeAssignVisible, setRemoveAssignVisible] = useState(false);
@@ -221,26 +250,26 @@ const Child = () => {
   };
   const handleRemoveAssignDevice = async () => {
     if (selectedChild) {
-        console.log(`Removing device assignment for child ID: ${selectedChild.id}`);
+      console.log(`Removing device assignment for child ID: ${selectedChild.id}`);
 
-        try {
-            const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/removeassign.php', {
-                baby_id: selectedChild.id,
-            });
+      try {
+        const response = await axios.post('https://maide-deeplearning.bsit-ln.com/api/baby/removeassign.php', {
+          baby_id: selectedChild.id,
+        });
 
-            if (response.data.success) {
-                Alert.alert('Success', response.data.message)
-                fetchChildren(userId as any)
-            } else {
-                console.warn('Error removing device assignment:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error during removal of device assignment:', error);
+        if (response.data.success) {
+          Alert.alert('Success', response.data.message)
+          fetchChildren(userId as any)
+        } else {
+          console.warn('Error removing device assignment:', response.data.message);
         }
+      } catch (error) {
+        console.error('Error during removal of device assignment:', error);
+      }
     } else {
-        console.warn("No child selected for device unassignment");
+      console.warn("No child selected for device unassignment");
     }
-};
+  };
 
 
 
@@ -312,6 +341,12 @@ const Child = () => {
       [field]: '',
     }));
   };
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchChildren(`${userId}`); // Replace with actual userId
+    setRefreshing(false);
+  };
   return (
     <>
       <ViewChildInfoDialog visible={visibleView} childId={selectedChild?.id} onClose={() => setVisibleView(false)} />
@@ -382,7 +417,9 @@ const Child = () => {
         />
 
         {/* Child List */}
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
           {filteredChildren.map((child) => (
             <View key={child.id} style={{ marginBottom: 8 }}>
               <Card
@@ -427,20 +464,22 @@ const Child = () => {
             <Text style={{ textAlign: 'center', marginTop: 20 }}>
               No children found.
             </Text>
+
           )}
+
         </ScrollView>
       </SafeAreaView>
 
       {/* Add Child Modal */}
       <Portal>
         <Dialog
-
           visible={addChildVisible}
           onDismiss={() => {
             setAddChildVisible(false);
             setNewChild({ nickname: '', age: '', gender: '' });
             setErrorChild({ nickname: '', age: '', gender: '' });
-          }}>
+          }}
+        >
           <Dialog.Title>Add Baby Information</Dialog.Title>
           <Dialog.Content>
             <TextInput
@@ -452,17 +491,31 @@ const Child = () => {
               error={!!errorChild.nickname}
             />
             {errorChild.nickname ? <Text style={styles.errorText}>{errorChild.nickname}</Text> : null}
-    
+
+
+
             <TextInput
               mode='outlined'
               label="Age (0 - 8 Months)"
-              value={newChild.age}
-              onChangeText={(text) => handleInputChange('age', text)}
+              value={ageInMonths.toString()}
               style={styles.input}
-              keyboardType="numeric"
-              error={!!errorChild.age}
+              editable={false}
             />
+            <Button mode="contained" onPress={showDatepicker} style={styles.buttonDatePicker}>
+              Select Birthdate
+            </Button>
+            {showDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={selectedDate || new Date()}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={onDateChange}
+              />
+            )}
             {errorChild.age ? <Text style={styles.errorText}>{errorChild.age}</Text> : null}
+
             <Dropdown
               mode="outlined"
               label="Gender"
@@ -483,8 +536,8 @@ const Child = () => {
             <Button onPress={handleAddChild}>Save Data</Button>
           </Dialog.Actions>
         </Dialog>
-
       </Portal>
+
       {/* Update Child Modal */}
       <Portal>
         <Dialog
@@ -492,7 +545,7 @@ const Child = () => {
           onDismiss={() => {
             setVisibleUpdate(false);
             setUpdatedChild({ nickname: '', age: '', gender: '' });
-            setErrorUpdateChild({ nickname: '',  age: '',gender: '' });
+            setErrorUpdateChild({ nickname: '', age: '', gender: '' });
           }}
         >
           <Dialog.Title>Update Baby Information</Dialog.Title>
@@ -578,6 +631,10 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
+  },
+  buttonDatePicker: {
+    marginHorizontal: 5, // Add horizontal spacing between buttons
+    marginVertical: 5, // Add vertical spacing for wrapped buttons
   },
 });
 

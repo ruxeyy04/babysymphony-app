@@ -1,3 +1,4 @@
+import EditDeviceSelectionDialog from '@/components/EditSharingDeviceDialog';
 import ShareDeviceSelectionDialog from '@/components/ShareDeviceSelectionDialog';
 import ViewDeviceInfoDialog from '@/components/ViewDeviceInfoDialog';
 import { useUserContext } from '@/context/UserContext';
@@ -56,6 +57,7 @@ const Devices = () => {
   const [viewDeviceVisible, setViewDeviceVisible] = useState<boolean>(false);
   const [updateDeviceVisible, setUpdateDeviceVisible] = useState<boolean>(false);
   const [shareDeviceVisible, setShareDeviceVisible] = useState<boolean>(false);
+  const [editshareDeviceVisible, seteditShareDeviceVisible] = useState<boolean>(false);
   const [deviceOptionsVisible, setDeviceOptionsVisible] = useState<string | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -142,6 +144,14 @@ const Devices = () => {
           setSelectedDevice(selectedDevice);
           setShareDeviceVisible(true);
           setShareDevice(selectedDevice)
+        }
+        break;
+      case 'edit_sharing':
+        console.log(`Edit Sharing device ID: ${deviceId}`);
+        if (selectedDevice) {
+          setSelectedDevice(selectedDevice);
+          seteditShareDeviceVisible(true);
+          seteditShareDevice(selectedDevice)
         }
         break;
       case 'delete':
@@ -262,6 +272,7 @@ const Devices = () => {
   const [errorDevice, setErrorDevice] = useState({ device_id: '', name: '' });
   const [updatedDevice, setUpdatedDevice] = useState({ device_id: '', name: '' });
   const [shareDevice, setShareDevice] = useState({ device_id: '' });
+  const [shareeditDevice, seteditShareDevice] = useState({ device_id: '' });
   const [errorUpdateDevice, setErrorUpdateDevice] = useState({ device_id: '', name: '' });
   const handleInputChange = (field: keyof DeviceInfo, value: string) => {
     setNewDevice(prevState => ({
@@ -310,6 +321,13 @@ const Devices = () => {
         deviceId={selectedDevice?.device_id}
         fetchDevice={fetchDevice}
       />
+      <EditDeviceSelectionDialog
+        visible={editshareDeviceVisible}
+        onClose={() => seteditShareDeviceVisible(false)}
+        userId={userId}
+        deviceId={selectedDevice?.device_id}
+        fetchDevice={fetchDevice}
+      />
       {filteredDevices.length === 0 ? (
         <Text style={{ textAlign: 'center', marginTop: 20 }}>No Device found.</Text>
       ) : (
@@ -325,7 +343,7 @@ const Devices = () => {
                 }
               >
                 <Card.Title
-                  title={`Device ID: ${item.device_id}`}
+                  title={`Device ID: ${item.device_id}  ${item.is_shared == 1 ? '(Shared)' : ''} `}
                   subtitle={`${item.name} | ${item.created_at}`}
                   left={(props) => <Avatar.Icon {...props} icon="chip" />}
                 />
