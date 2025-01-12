@@ -244,7 +244,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
                   Alert.alert(
                     parsedData.title,
-                    parsedData.description,
+                    "",
                     [
                       {
                         text: 'Acknowledge',
@@ -275,7 +275,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
                   Alert.alert(
                     parsedData.title,
-                    parsedData.description,
+                    "",
                     [
                       {
                         text: 'Acknowledge',
@@ -306,7 +306,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
                   Alert.alert(
                     parsedData.title,
-                    parsedData.description,
+                    "",
                     [
                       {
                         text: 'Acknowledge',
@@ -337,7 +337,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
                   Alert.alert(
                     parsedData.title,
-                    parsedData.description,
+                    "",
                     [
                       {
                         text: 'Acknowledge',
@@ -368,7 +368,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
                   Alert.alert(
                     parsedData.title,
-                    parsedData.description,
+                    "",
                     [
                       {
                         text: 'Acknowledge',
@@ -424,7 +424,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: title,
-        body: body,
+        body: "",
       },
       trigger: null,
     });

@@ -47,18 +47,31 @@ const Child = () => {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const currentDate = new Date();
   const calculateAgeInMonths = (birthDate: Date): number => {
-
-    const birth = new Date(birthDate);
-
-    let ageInMonths = currentDate.getMonth() - birth.getMonth();
-    const yearsDifference = currentDate.getFullYear() - birth.getFullYear();
-
-    if (ageInMonths < 0) {
-      ageInMonths += 12;
+    const currentDate = new Date();
+  
+    if (birthDate > currentDate) {
+      return 0;
     }
-    ageInMonths += yearsDifference * 12;
+  
+    let yearsDifference = currentDate.getFullYear() - birthDate.getFullYear();
+    let monthsDifference = currentDate.getMonth() - birthDate.getMonth();
+  
+    if (monthsDifference < 0) {
+      yearsDifference -= 1;
+      monthsDifference += 12;
+    }
+  
+    let ageInMonths = yearsDifference * 12 + monthsDifference;
+  
+    if (currentDate.getDate() < birthDate.getDate()) {
+      ageInMonths -= 1;
+    }
+    console.log("Months: " + ageInMonths)
     return ageInMonths;
   };
+  
+  
+  
   const showDatepicker = () => {
     setShowDatePicker(true);
   };
@@ -66,27 +79,28 @@ const Child = () => {
   const onDateChange = (event: any, selectedDate: Date | undefined) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      // Strip the time component and adjust for local time zone
+      // Strip the time component and adjust for the local time zone
       const dateOnly = new Date(selectedDate);
       dateOnly.setHours(0, 0, 0, 0); // Remove the time
-
-      console.log(dateOnly.toISOString().split('T')[0]); // Logs only the date in YYYY-MM-DD format
+  
       setSelectedDate(dateOnly);
-
+  
       const age = calculateAgeInMonths(dateOnly);
       setAgeInMonths(age);
+      console.log(age); // Logs the calculated age in months
     }
   };
+  
   const onUpdateDateChange = (event: any, selectedDate: Date | undefined) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      // Strip the time component and adjust for local time zone
+      // Strip the time component and adjust for the local time zone
       const dateOnly = new Date(selectedDate);
       dateOnly.setHours(0, 0, 0, 0); // Remove the time
-
-      console.log(dateOnly.toISOString().split('T')[0]); // Logs only the date in YYYY-MM-DD format
+  
+      console.log(dateOnly.toISOString().split("T")[0]); // Logs only the date in YYYY-MM-DD format
       setSelectedEditDate(dateOnly);
-
+  
       const age = calculateAgeInMonths(dateOnly);
       setAgeEditInMonths(age);
     }
